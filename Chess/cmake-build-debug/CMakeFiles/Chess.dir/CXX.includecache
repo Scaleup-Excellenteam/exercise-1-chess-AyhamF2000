@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../include/Chess.h
+iostream
+-
+Windows.h
+-
+string
+-
+
+C:/Users/RebalFarhat/Desktop/cpp/ex01/exercise-1-chess-AyhamF2000/Chess/src/main.cpp
+Chess.h
+C:/Users/RebalFarhat/Desktop/cpp/ex01/exercise-1-chess-AyhamF2000/Chess/src/Chess.h
+sstream
+-
+

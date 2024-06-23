@@ -1,2 +1,81 @@
-*.vs
+# Compiled object files
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Compiled Static libraries
+*.a
+*.lib
+
+# Executables
+*.exe
 *.out
+*.app
+
+# Debug files
+*.dSYM/
+*.csp
+
+# Generated files
+*.log
+*.tmp
+*.bak
+*.swp
+
+# IDE directories
+.vscode/
+.idea/
+*.code-workspace
+
+# Visual Studio files
+*.vs
+
+# CMake build directories
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Build directories
+build/
+Build/
+Debug/
+Release/
+
+# Qt Creator
+*.autosave
+*.user
+*.creator
+*.pro.user
+*.qbs.user
+*.qbs
+*.pro
+*.pri
+
+# Xcode
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+xcuserdata/
+*.xcworkspace
+*.xcworkspacedata
+*.xcuserstate
+
+# JetBrains
+*.iml
+.idea/
+*.iws
+*.ipr
+
+# Other files
+*.DS_Store
+*.directory

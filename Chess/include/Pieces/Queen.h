@@ -1,9 +1,10 @@
 #pragma once
 #include "Piece.h"
 #include "Board.h"
-
-class Queen : public Piece {
+#include "Pieces/Rook.h"
+#include "Pieces/Bishop.h"
+class Queen : public Piece, public Rook, public Bishop {
 public:
-    Queen(char color, char name) : Piece(color, name) {}
+    Queen(const char color, const char name) : Piece(color, name), Rook(color, name), Bishop(color, name) {}
     virtual bool isMoveLegal(int currentRow, int currentColumn, int goalRow, int goalColumn, const Board& board) const override;
 };

@@ -3,8 +3,8 @@ class Board;  // Forward declaration to avoid circular dependency
 
 class Piece {
 protected:
-    char color;  // 'W' for white, 'B' for black
-    char name; // B K N P Q R
+    const char color;  // 'W' for white, 'B' for black
+    const char name; // B K N P Q R
 
 public:
     Piece(char color, char name) : color(color), name(name) {}

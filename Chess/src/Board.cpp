@@ -7,14 +7,31 @@
 #include "Pieces/Pawn.h"
 #include <cctype>  
 #include <memory>  
+#include <string>
+#include <stdexcept>
 
+const int BOARD_SIZE = 8;
 
 /**
  * @brief Constructs the Board and sets up the initial pieces.
  */
-Board::Board() : board(8, std::vector<std::shared_ptr<Piece>>(8)) {
+Board::Board() : board(BOARD_SIZE, std::vector<std::shared_ptr<Piece>>(BOARD_SIZE)) {
     setupBoard();
 }
+
+
+
+
+
+/**
+ * @brief Constructs the Board from a string representation of the board state.
+ */
+Board::Board(const std::string& boardStr) : board(BOARD_SIZE, std::vector<std::shared_ptr<Piece>>(BOARD_SIZE)) {
+    setupBoard(boardStr);
+}
+
+
+
 
 
 /**
@@ -43,11 +60,56 @@ void Board::setupBoard() {
     board[0][4] = createPiece('K', 'W');
     board[7][4] = createPiece('K', 'B');
     // Place Pawns
-    for (int i = 0; i < 8; i++) {
+    for (int i = 0; i < BOARD_SIZE; i++) {
         board[1][i] = createPiece('P', 'W');
         board[6][i] = createPiece('P', 'B');
     }
 }
+
+
+
+
+
+/**
+ * @brief Sets up the board based on a string representation.
+ *
+ * This method initializes the board according to a given string representation.
+ * The string should be of length BOARD_SIZE * BOARD_SIZE, where each character represents
+ * a piece or an empty square on the board:
+ * - 'R'/'r' for Rook
+ * - 'N'/'n' for Knight
+ * - 'B'/'b' for Bishop
+ * - 'Q'/'q' for Queen
+ * - 'K'/'k' for King
+ * - 'P'/'p' for Pawn
+ * - '#' for an empty square
+ *
+ * Uppercase letters represent white pieces, and lowercase letters represent black pieces.
+ *
+ * @param boardStr A string representing the initial state of the board.
+ * @throw std::invalid_argument if the length of the boardStr is not BOARD_SIZE * BOARD_SIZE.
+ */
+void Board::setupBoard(const std::string& boardStr) {
+    if (boardStr.size() != BOARD_SIZE * BOARD_SIZE) {
+        throw std::invalid_argument("Invalid board string length");
+    }
+
+    for (int row = 0; row < BOARD_SIZE; ++row) {
+        for (int col = 0; col < BOARD_SIZE; ++col) {
+            char pieceChar = boardStr[row * BOARD_SIZE + col];
+            char color = (std::isupper(pieceChar) ? 'W' : 'B');
+            if (pieceChar == '#') {
+                board[row][col] = nullptr;
+            }
+            else {
+                board[row][col] = createPiece(std::toupper(pieceChar), color);
+            }
+        }
+    }
+}
+
+
+
 
 
 /**
@@ -62,6 +124,9 @@ std::shared_ptr<Piece> Board::getPiece(int row, int column) const {
 }
 
 
+
+
+
 /**
  * @brief Creates a piece based on its type/name and color.
  *
@@ -69,7 +134,7 @@ std::shared_ptr<Piece> Board::getPiece(int row, int column) const {
  * @param color The color of the piece ('W' for white, 'B' for black).
  * @return std::shared_ptr<Piece> The created piece.
  */
-std::shared_ptr<Piece> Board::createPiece(char type, char color) {
+std::shared_ptr<Piece> Board::createPiece(const char type, const char color) {
     switch (std::toupper(type)) {
     case 'R':
         return std::make_shared<Rook>(color, type);
@@ -89,6 +154,9 @@ std::shared_ptr<Piece> Board::createPiece(char type, char color) {
 }
 
 
+
+
+
 /**
  * @brief Return the CodeResponse.
  *
@@ -99,13 +167,13 @@ std::shared_ptr<Piece> Board::createPiece(char type, char color) {
  * @param playerColor The color of the player making the move.
  * @return int The result code indicating the legality and result of the move.
  */
-int Board::checkMove(int currentRow, int currentColumn, int goalRow, int goalColumn, char playerColor) {
+int Board::checkMove(const int currentRow, const int currentColumn, const int goalRow, const int goalColumn, const char playerColor) {
 
     // This statement is handled in the Chess.cpp
 
-    /*if (currentRow < 0 || currentRow >= 8 || currentColumn < 0 || 
-        currentColumn >= 8 || goalRow < 0 || goalRow >= 8 || 
-        goalColumn < 0 || goalColumn >= 8) {
+    /*if (currentRow < 0 || currentRow >= BOARD_SIZE || currentColumn < 0 || 
+        currentColumn >= BOARD_SIZE || goalRow < 0 || goalRow >= BOARD_SIZE || 
+        goalColumn < 0 || goalColumn >= BOARD_SIZE) {
         
         return 21;
     }*/
@@ -128,28 +196,40 @@ int Board::checkMove(int currentRow, int currentColumn, int goalRow, int goalCol
     board[goalRow][goalColumn] = board[currentRow][currentColumn];
     board[currentRow][currentColumn] = nullptr;
 
+    // Check if the move leaves the player's own king in check
+    bool causesSelfCheck = isKingInCheck(playerColor);
+
+    // Undo the move
+    board[currentRow][currentColumn] = board[goalRow][goalColumn];
+    board[goalRow][goalColumn] = temp;
+
+    // If the move leaves the player's own king in check, it is illegal
+    if (causesSelfCheck) {
+        return 31;  // illegal movement of that piece (because it does not protect the king)
+    }
+
+    // Finalize the move (now that we know it does not leave the king in check)
+    board[goalRow][goalColumn] = board[currentRow][currentColumn];
+    board[currentRow][currentColumn] = nullptr;
+
     // Check if the move causes checkmate
     bool causesCheckmate = isKingInCheck(opponentColor) && !canEscapeCheck(opponentColor);
 
-    // Check if the move causes check
-    bool causesCheck = isKingInCheck(opponentColor);
-
-    // Undo the move, if the move causes checkmate
+    //win the game, i will add this in the future, you did not ask for that 
     if (causesCheckmate) {
-        board[currentRow][currentColumn] = board[goalRow][goalColumn];
-        board[goalRow][goalColumn] = temp;
         return 31;  // this movement will cause checkmate
     }
 
-    // ******************  
-    // In the future, an if-statement will be added here to check if the king is captured (you did not ask for that) 
-
-    else if (causesCheck)
+    // Check if the move causes check
+    if (isKingInCheck(opponentColor)) {
         return 41;  // the last movement was legal and caused check
-    
-    else 
+    }
+    else {
         return 42;  // the last movement was legal, next turn
+    }
 }
+
+
 
 
 
@@ -159,7 +239,7 @@ int Board::checkMove(int currentRow, int currentColumn, int goalRow, int goalCol
  * @param color The color of the king.
  * @return std::shared_ptr<Piece>& The king piece.
  */
-std::shared_ptr<Piece>& Board::getTheKingByColor(char color) {
+std::shared_ptr<Piece>& Board::getTheKingByColor(const char color) {
     for (auto& row : board) {
         for (auto& piece : row) {
             if (piece && piece->getName() == 'K' && piece->getColor() == color) {
@@ -167,9 +247,15 @@ std::shared_ptr<Piece>& Board::getTheKingByColor(char color) {
             }
         }
     }
-    static std::shared_ptr<Piece> nullPiece = nullptr;
-    return nullPiece;  // Return a reference to a null shared pointer if the king is not found
+    // Return a static null shared_ptr to ensure the return reference is always valid.
+    // Returning just nullptr would be invalid as it would be a reference to a temporary value.
+    static std::shared_ptr<Piece> nullPiece = nullptr; // i make this because i return a refrence value
+    return nullPiece;
+
 }
+
+
+
 
 
 /**
@@ -178,7 +264,7 @@ std::shared_ptr<Piece>& Board::getTheKingByColor(char color) {
  * @param color The color of the king.
  * @return std::pair<int, int> The row and column of the king.
  */
-std::pair<int, int> Board::getKingPositionByColor(char color) {
+std::pair<int, int> Board::getKingPositionByColor(const char color) {
     for (int row = 0; row < board.size(); ++row) {
         for (int col = 0; col < board[row].size(); ++col) {
             if (board[row][col] && board[row][col]->getName() == 'K' && board[row][col]->getColor() == color) {
@@ -190,13 +276,16 @@ std::pair<int, int> Board::getKingPositionByColor(char color) {
 }
 
 
+
+
+
 /**
  * @brief Checks if the king of the specified color is in check.
  *
  * @param color The color of the king.
  * @return bool True if the king is in check, false otherwise.
  */
-bool Board::isKingInCheck(char color) {
+bool Board::isKingInCheck(const char color) {
     std::pair<int, int> kingPosition = getKingPositionByColor(color);
     int kingRow = kingPosition.first;
     int kingColumn = kingPosition.second;
@@ -218,13 +307,16 @@ bool Board::isKingInCheck(char color) {
 }
 
 
+
+
+
 /**
  * @brief Checks if the king of the specified color can escape check.
  *
  * @param color The color of the king.
  * @return bool True if the king can escape check, false otherwise.
  */
-bool Board::canEscapeCheck(char color) {
+bool Board::canEscapeCheck(const char color) {
     
     for (int currentRow = 0; currentRow < board.size(); ++currentRow) {
         for (int currentColumn = 0; currentColumn < board[currentRow].size(); ++currentColumn) {

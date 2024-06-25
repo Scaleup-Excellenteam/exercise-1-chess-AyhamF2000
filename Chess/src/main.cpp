@@ -7,7 +7,7 @@ int main()
 	string board = "RNBQKBNRPPPPPPPP################################pppppppprnbqkbnr"; 
 	Chess a(board);
 
-    Board myBoard;
+    Board myBoard(board);
 	char myColor = 'W';
 
 	int codeResponse = 0;
@@ -32,6 +32,7 @@ int main()
 
 			// Smart move to checkmate the black king in 5 moves:
 			//  b5d5  g6e6  a4e8  g5f5  e8h5 
+			// g5f5 move will not be done --> i cause cause checkmate
 
             std::stringstream stringNumber1,stringNumber2;
             stringNumber1 << res[1];
@@ -46,11 +47,6 @@ int main()
             stringNumber2 >> goalColumn;
             currentColumn--;
             goalColumn--;
-
-            cout <<currentRow ;
-            cout <<currentColumn ;
-            cout <<goalRow ;
-            cout <<goalColumn ;
 
             codeResponse = myBoard.checkMove(currentRow,currentColumn ,goalRow,goalColumn, myColor);
 			if (codeResponse == 41 || codeResponse == 42)

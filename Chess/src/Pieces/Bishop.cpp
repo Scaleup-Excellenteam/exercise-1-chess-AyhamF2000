@@ -1,0 +1,22 @@
+#include "Pieces/Bishop.h"
+
+// Bishops move diagonally
+bool Bishop::isMoveLegal(int currentRow, int currentColumn, int goalRow, int goalColumn, const Board& board) const {
+    if (abs(goalRow - currentRow) != abs(goalColumn - currentColumn))
+        return false;  
+
+    // Check if path is clear
+    int rowStep = (goalRow > currentRow) ? 1 : -1;
+    int colStep = (goalColumn > currentColumn) ? 1 : -1;
+    int row = currentRow + rowStep;
+    int col = currentColumn + colStep;
+
+    while (row != goalRow && col != goalColumn) {
+        if (board.getPiece(row, col))
+            return false;  // Path is blocked
+        row += rowStep;
+        col += colStep;
+    }
+
+    return true;
+}

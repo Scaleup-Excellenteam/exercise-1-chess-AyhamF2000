@@ -1,11 +1,15 @@
 // Chess 
 #include "Chess.h"
-
+#include <sstream>
+#include "Board.h"
 int main()
 {
 	string board = "RNBQKBNRPPPPPPPP################################pppppppprnbqkbnr"; 
-//	string board = "##########K###############################R#############r#r#####";
 	Chess a(board);
+
+    Board myBoard(board);
+	char myColor = 'W';
+
 	int codeResponse = 0;
 	string res = a.getInput();
 	while (res != "exit")
@@ -24,15 +28,34 @@ int main()
 		42 - the last movement was legal, next turn 
 		*/
 
-		/**/ 
 		{ // put your code here instead that code
-			cout << "code response >> ";
-			cin >> codeResponse;
-		}
-		/**/
 
+			// Smart move to checkmate the black king in 5 moves:
+			//  b5d5  g6e6  a4e8  g5f5  e8h5 
+			// g5f5 move will not be done --> i cause cause checkmate
+
+            std::stringstream stringNumber1,stringNumber2;
+            stringNumber1 << res[1];
+            stringNumber2 << res[3];
+
+            int currentColumn,
+            goalColumn,
+            currentRow = res[0] - 'a',
+            goalRow = res[2] - 'a';
+
+            stringNumber1 >> currentColumn;
+            stringNumber2 >> goalColumn;
+            currentColumn--;
+            goalColumn--;
+
+            codeResponse = myBoard.checkMove(currentRow,currentColumn ,goalRow,goalColumn, myColor);
+			if (codeResponse == 41 || codeResponse == 42)
+				myColor = (myColor == 'W' ? 'B' : 'W');
+
+        }
+		
 		a.setCodeResponse(codeResponse);
-		res = a.getInput(); 
+		res = a.getInput();
 	}
 
 	cout << endl << "Exiting " << endl; 

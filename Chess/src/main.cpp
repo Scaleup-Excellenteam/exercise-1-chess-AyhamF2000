@@ -32,7 +32,7 @@ int main()
 
 			// Smart move to checkmate the black king in 5 moves:
 			//  b5d5  g6e6  a4e8  g5f5  e8h5 
-			// g5f5 move will not be done --> i cause cause checkmate
+			// g5f5 move will not be done --> i cause cause checkmate.
 
             std::stringstream stringNumber1,stringNumber2;
             stringNumber1 << res[1];

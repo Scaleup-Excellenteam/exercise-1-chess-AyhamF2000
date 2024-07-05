@@ -5,7 +5,7 @@
 int main()
 {
 	//string board = "RNBQKBNRPPPPPPPP################################pppppppprnbqkbnr";
-	string board = "R###K##RPPPPPPPP################################pppppppprnbqkbnr";// to check the castling
+	string board = "R###K##R####PPPPb###############################pppppppprnbqkbnr";// to check the castling
 
 	Chess a(board);
 

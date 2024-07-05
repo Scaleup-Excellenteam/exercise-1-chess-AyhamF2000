@@ -188,9 +188,15 @@ int Board::checkMove(const int currentRow, const int currentColumn, const int go
     if (board[goalRow][goalColumn] && board[goalRow][goalColumn]->getColor() == playerColor)
         return 13;  // there is one of your pieces at the destination 
 
+    // Check for castling
+    if (checkForCastling(currentRow, currentColumn, goalRow, goalColumn, playerColor)) {
+        return 43;  // Castling performed successfully
+    }
+
     if (!board[currentRow][currentColumn]->isMoveLegal(currentRow, currentColumn, goalRow, goalColumn, *this))
         return 21;  // illegal movement of that piece
 
+    
     // Simulate the move
     std::shared_ptr<Piece> temp = board[goalRow][goalColumn];
     board[goalRow][goalColumn] = board[currentRow][currentColumn];
@@ -208,7 +214,9 @@ int Board::checkMove(const int currentRow, const int currentColumn, const int go
         return 31;  // illegal movement of that piece (because it does not protect the king)
     }
 
-    // Finalize the move (now that we know it does not leave the king in check)
+    
+
+    // Finalize the move (now that we know it does not leave the king in check) 
     board[goalRow][goalColumn] = board[currentRow][currentColumn];
     board[currentRow][currentColumn] = nullptr;
 
@@ -355,3 +363,72 @@ bool Board::canEscapeCheck(const char color) {
     return false;
 }
 
+bool Board::checkForCastling(int currentRow, int currentColumn, int goalRow, int goalColumn, const char playerColor) {
+    if (board[currentRow][currentColumn]->getName() == 'K' && !board[currentRow][currentColumn]->hasMoved() && currentRow == goalRow) {
+        bool validCastling = false;
+
+        // Handle kingside castling
+        if (currentColumn == goalColumn - 2) {
+            // Check if the rook on the kingside exists and hasn't moved
+            if (board[currentRow][7] != nullptr && !board[currentRow][7]->hasMoved()) {
+                // Check if the squares between the king and rook are empty
+                if (board[currentRow][currentColumn + 1] == nullptr && board[currentRow][currentColumn + 2] == nullptr) {
+                    // Perform the move and check if it puts the king in check
+                    std::shared_ptr<Piece> temp = board[goalRow][goalColumn];
+                    board[goalRow][goalColumn] = board[currentRow][currentColumn];
+                    board[currentRow][currentColumn] = nullptr;
+
+                    // Check if the move leaves the player's own king in check
+                    bool causesSelfCheck = isKingInCheck(playerColor);
+
+                    // Undo the move
+                    board[currentRow][currentColumn] = board[goalRow][goalColumn];
+                    board[goalRow][goalColumn] = temp;
+
+                    if (!causesSelfCheck) {
+                        board[goalRow][goalColumn] = board[currentRow][currentColumn];
+                        board[goalRow][currentColumn + 1] = board[currentRow][7];
+                        board[currentRow][7] = nullptr;
+                        board[currentRow][currentColumn] = nullptr;
+
+                        validCastling = true;
+                    }
+                }
+            }
+        }
+        // Handle queenside castling
+        else if (currentColumn == goalColumn + 2) {
+            // Check if the rook on the queenside exists and hasn't moved
+            if (board[currentRow][0] != nullptr && !board[currentRow][0]->hasMoved()) {
+                // Check if the squares between the king and rook are empty
+                if (board[currentRow][currentColumn - 1] == nullptr && board[currentRow][currentColumn - 2] == nullptr && board[currentRow][currentColumn - 3] == nullptr) {
+                    // Perform the move and check if it puts the king in check
+                    std::shared_ptr<Piece> temp = board[goalRow][goalColumn];
+                    board[goalRow][goalColumn] = board[currentRow][currentColumn];
+                    board[currentRow][currentColumn] = nullptr;
+
+                    // Check if the move leaves the player's own king in check
+                    bool causesSelfCheck = isKingInCheck(playerColor);
+
+                    // Undo the move
+                    board[currentRow][currentColumn] = board[goalRow][goalColumn];
+                    board[goalRow][goalColumn] = temp;
+
+                    if (!causesSelfCheck) {
+                        board[goalRow][goalColumn] = board[currentRow][currentColumn];
+                        board[goalRow][currentColumn - 1] = board[currentRow][0];
+                        board[currentRow][0] = nullptr;
+                        board[currentRow][currentColumn] = nullptr;
+
+                        validCastling = true;
+                    }
+                }
+            }
+        }
+
+        if (validCastling) {
+            return true;  // Castling performed successfully
+        }
+    }
+    return false;
+}

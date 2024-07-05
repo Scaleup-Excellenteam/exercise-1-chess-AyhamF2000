@@ -13,6 +13,6 @@ public:
     char getColor() const { return color; }
     char getName() const { return name; }
 
-
+    virtual bool hasMoved() const { return true; }
     virtual bool isMoveLegal(int currentRow, int currentColumn, int goalRow, int goalColumn, const Board& board) const = 0;
 };

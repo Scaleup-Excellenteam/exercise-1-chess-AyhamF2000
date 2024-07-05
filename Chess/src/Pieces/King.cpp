@@ -5,5 +5,8 @@ bool King::isMoveLegal(int currentRow, int currentColumn, int goalRow, int goalC
     int rowDiff = abs(goalRow - currentRow);
     int colDiff = abs(goalColumn - currentColumn);
 
+    if (this->FirstMove == true)
+        this->FirstMove = false;
+
     return (rowDiff <= 1 && colDiff <= 1);  
 }

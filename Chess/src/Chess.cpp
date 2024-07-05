@@ -196,8 +196,53 @@ void Chess::doTurn()
 		m_turn = !m_turn;
 		m_msg = "the last movement was legal \n";
 		break;
+	case 43:
+		executeCastling();
+		m_turn = !m_turn;
+		m_msg = "Castling performed successfully \n";
+		break;
+	case 44:
+		m_msg = "Checkmate! The game is over.\n";
+		displayBoard();
+		exit(0);
 	}
 	}
+}
+
+void Chess::executeCastling() {
+	int row = m_input[0] - 'a';
+	int col = m_input[1] - '1';
+
+	// Determine the type of castling based on the input
+	bool isKingside = (m_input[2] == m_input[0] && m_input[3] == m_input[1] + 2);
+	bool isQueenside = (m_input[2] == m_input[0] && m_input[3] == m_input[1] - 2);
+
+	char king = m_boardString[row * 8 + col];
+	char rook;
+
+	if (isKingside) {
+		// Move the king two squares to the right
+		m_boardString[row * 8 + col] = '#';
+		m_boardString[row * 8 + (col + 2)] = king;
+
+		// Move the rook next to the king's new position
+		rook = m_boardString[row * 8 + 7];
+		m_boardString[row * 8 + 7] = '#';
+		m_boardString[row * 8 + (col + 1)] = rook;
+	}
+	else if (isQueenside) {
+		// Move the king two squares to the left
+		m_boardString[row * 8 + col] = '#';
+		m_boardString[row * 8 + (col - 2)] = king;
+
+		// Move the rook next to the king's new position
+		rook = m_boardString[row * 8 + 0];
+		m_boardString[row * 8 + 0] = '#';
+		m_boardString[row * 8 + (col - 1)] = rook;
+	}
+
+	// Update the ASCII board representation
+	setPieces();
 }
 
 // C'tor
@@ -252,6 +297,7 @@ void Chess::setCodeResponse(int codeResponse)
 {
 	if (((11 <= codeResponse) && (codeResponse <= 13)) ||
 		((21 == codeResponse) || (codeResponse == 31)) ||
-		((41 == codeResponse) || (codeResponse == 42)))
+		((41 == codeResponse) || (codeResponse == 42)) ||
+		((43 == codeResponse) || (codeResponse == 44)))
 		m_codeResponse = codeResponse;
 }

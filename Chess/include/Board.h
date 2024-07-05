@@ -14,8 +14,6 @@ public:
     void setupBoard();
     void setupBoard(const std::string&);
     std::shared_ptr<Piece> getPiece(int row, int column) const;
-
-
 private:
     std::vector<std::vector<std::shared_ptr<Piece>>> board;
     std::shared_ptr<Piece> createPiece(const char type, const char color);
@@ -23,6 +21,8 @@ private:
     std::pair<int, int> getKingPositionByColor(const char color);
     bool isKingInCheck(const char color);
     bool canEscapeCheck(const char color);
+    bool checkForCastling(int currentRow, int currentColumn, int goalRow, int goalColumn, const char playerColor);
+
    
 
 };

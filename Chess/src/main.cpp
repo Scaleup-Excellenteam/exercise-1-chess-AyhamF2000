@@ -4,7 +4,9 @@
 #include "Board.h"
 int main()
 {
-	string board = "RNBQKBNRPPPPPPPP################################pppppppprnbqkbnr"; 
+	//string board = "RNBQKBNRPPPPPPPP################################pppppppprnbqkbnr";
+	string board = "R###K##RPPPPPPPP################################pppppppprnbqkbnr";// to check the castling
+
 	Chess a(board);
 
     Board myBoard(board);
@@ -26,6 +28,8 @@ int main()
 		legal movements : 
 		41 - the last movement was legal and cause check 
 		42 - the last movement was legal, next turn 
+		43 - castling 
+		44 - chess
 		*/
 
 		{ // put your code here instead that code
@@ -49,7 +53,7 @@ int main()
             goalColumn--;
 
             codeResponse = myBoard.checkMove(currentRow,currentColumn ,goalRow,goalColumn, myColor);
-			if (codeResponse == 41 || codeResponse == 42)
+			if (codeResponse >= 41 && codeResponse <= 44)
 				myColor = (myColor == 'W' ? 'B' : 'W');
 
         }

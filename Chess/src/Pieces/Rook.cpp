@@ -21,5 +21,8 @@ bool Rook::isMoveLegal(int currentRow, int currentColumn, int goalRow, int goalC
         }
     }
 
+    if (this->FirstMove == true)
+        this->FirstMove = false;
     return true;
+    
 }

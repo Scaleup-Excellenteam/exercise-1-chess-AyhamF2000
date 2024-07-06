@@ -202,9 +202,20 @@ void Chess::doTurn()
 		m_msg = "Castling performed successfully \n";
 		break;
 	case 44:
-		m_msg = "Checkmate! The game is over.\n";
+		switch (gameState) {
+		case WHITE_WIN: 
+			m_msg = "Checkmate! White wins the game.\n";
+			break;
+		case BLACK_WIN: 
+			m_msg = "Checkmate! Black wins the game.\n";
+			break;
+		case DRAW: 
+			m_msg = "The game is a draw.\n";
+			break;
+		}
 		displayBoard();
 		exit(0);
+		break;
 	}
 	}
 }
@@ -247,7 +258,7 @@ void Chess::executeCastling() {
 
 // C'tor
 Chess::Chess(const string& start)
-	: m_boardString(start),m_codeResponse(-1)
+	: m_boardString(start),m_codeResponse(-1), gameState(STILL_PLAYING)
 {
 	setFrames();
 	setPieces();
@@ -300,4 +311,8 @@ void Chess::setCodeResponse(int codeResponse)
 		((41 == codeResponse) || (codeResponse == 42)) ||
 		((43 == codeResponse) || (codeResponse == 44)))
 		m_codeResponse = codeResponse;
+}
+
+void Chess::setGameState(GameState state) {
+	gameState = state;
 }

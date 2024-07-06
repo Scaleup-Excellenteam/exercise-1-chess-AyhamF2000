@@ -9,8 +9,7 @@
 #include <memory>  
 #include <string>
 #include <stdexcept>
-
-const int BOARD_SIZE = 8;
+#include <iostream>
 
 /**
  * @brief Constructs the Board and sets up the initial pieces.
@@ -120,7 +119,9 @@ void Board::setupBoard(const std::string& boardStr) {
  * @return std::shared_ptr<Piece> The piece at the specified position.
  */
 std::shared_ptr<Piece> Board::getPiece(int row, int column) const {
-    return board[row][column];
+    if(row >= 0 && row < BOARD_SIZE && column >= 0 && column < BOARD_SIZE)
+        return board[row][column];
+    return nullptr;
 }
 
 
@@ -221,11 +222,16 @@ int Board::checkMove(const int currentRow, const int currentColumn, const int go
     board[currentRow][currentColumn] = nullptr;
 
     // Check if the move causes checkmate
-    bool causesCheckmate = isKingInCheck(opponentColor) && !canEscapeCheck(opponentColor);
+    bool causesCheckmate = isKingInCheck(opponentColor) && !canEscapeCheck(opponentColor); // out of range 
 
     //win the game, i will add this in the future, you did not ask for that 
     if (causesCheckmate) {
-        return 31;  // this movement will cause checkmate
+        if(playerColor=='W')
+            gameState = WHITE_WIN;
+        else
+            gameState = BLACK_WIN;
+
+        return 44;  // this movement will cause checkmate
     }
 
     // Check if the move causes check
@@ -257,7 +263,7 @@ std::shared_ptr<Piece>& Board::getTheKingByColor(const char color) {
     }
     // Return a static null shared_ptr to ensure the return reference is always valid.
     // Returning just nullptr would be invalid as it would be a reference to a temporary value.
-    static std::shared_ptr<Piece> nullPiece = nullptr; // i make this because i return a refrence value
+    static std::shared_ptr<Piece> nullPiece = nullptr; // i make this because will return a refrence value
     return nullPiece;
 
 }
@@ -352,6 +358,7 @@ bool Board::canEscapeCheck(const char color) {
                             board[goalRow][goalColumn] = temp;
 
                             if (!isInCheck) {
+                                //std::cout << currentRow << currentColumn << goalRow << goalColumn <<std::endl;
                                 return true;  // Found a legal move to escape check
                             }
                         }
@@ -431,4 +438,12 @@ bool Board::checkForCastling(int currentRow, int currentColumn, int goalRow, int
         }
     }
     return false;
+}
+bool Board::endGameWithCheckmate() {
+    
+    return false;
+}
+
+Board::GameState Board::getGameState() const {
+    return gameState;
 }

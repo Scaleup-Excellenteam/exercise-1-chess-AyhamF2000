@@ -4,8 +4,8 @@
 #include "Board.h"
 int main()
 {
-	//string board = "RNBQKBNRPPPPPPPP################################pppppppprnbqkbnr";
-	string board = "R###K##R####PPPPb###############################pppppppprnbqkbnr";// to check the castling
+	string board = "RNBQKBNRPPPPPPPP################################pppppppprnbqkbnr";
+	//string board = "R###K##R####PPPPb###############################ppppppppr###k##r";// to check the castling
 
 	Chess a(board);
 
@@ -36,6 +36,7 @@ int main()
 
 			// Smart move to checkmate the black king in 5 moves:
 			//  b5d5  g6e6  a4e8  g5f5  e8h5 
+			// b6c6 g5e5 b7d7 h4d8
 			// g5f5 move will not be done --> i cause cause checkmate.
 
             std::stringstream stringNumber1,stringNumber2;
@@ -56,6 +57,7 @@ int main()
 			if (codeResponse >= 41 && codeResponse <= 44)
 				myColor = (myColor == 'W' ? 'B' : 'W');
 
+			a.setGameState(Chess::WHITE_WIN);
         }
 		
 		a.setCodeResponse(codeResponse);

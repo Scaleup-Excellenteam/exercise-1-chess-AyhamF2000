@@ -38,4 +38,9 @@ public:
 	Chess& operator=(const Chess&) = delete;
 	string getInput();
 	void setCodeResponse(int codeResponse);
+
+	enum GameState { WHITE_WIN, BLACK_WIN, DRAW, STILL_PLAYING };
+	GameState gameState;
+	void setGameState(GameState state); 
+
 };

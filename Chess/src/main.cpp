@@ -6,6 +6,7 @@ int main()
 {
 	string board = "RNBQKBNRPPPPPPPP################################pppppppprnbqkbnr";
 	//string board = "R###K##R####PPPPb###############################ppppppppr###k##r";// to check the castling
+	//string board = "RNBQK###PPPPPPPP############################################kbnr";
 
 	Chess a(board);
 
@@ -34,10 +35,9 @@ int main()
 
 		{ // put your code here instead that code
 
-			// Smart move to checkmate the black king in 5 moves:
-			//  b5d5  g6e6  a4e8  g5f5  e8h5 
+			// Smart move to checkmate the black king in 4 moves:
 			// b6c6 g5e5 b7d7 h4d8
-			// g5f5 move will not be done --> i cause cause checkmate.
+			
 
             std::stringstream stringNumber1,stringNumber2;
             stringNumber1 << res[1];
@@ -57,7 +57,13 @@ int main()
 			if (codeResponse >= 41 && codeResponse <= 44)
 				myColor = (myColor == 'W' ? 'B' : 'W');
 
-			a.setGameState(Chess::WHITE_WIN);
+			if (myBoard.getGameState() == Board::GameState::WHITE_WIN) { 
+				a.setGameState(Chess::WHITE_WIN);
+			}else if (myBoard.getGameState() == Board::GameState::BLACK_WIN) {
+				a.setGameState(Chess::BLACK_WIN);
+			}else if (myBoard.getGameState() == Board::GameState::DRAW) {
+				a.setGameState(Chess::DRAW); 
+			} 
         }
 		
 		a.setCodeResponse(codeResponse);

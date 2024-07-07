@@ -2,6 +2,8 @@
 
 // Knight moves in an L-shape
 bool Knight::isMoveLegal(int currentRow, int currentColumn, int goalRow, int goalColumn, const Board& board) const {
+    if (currentRow == goalRow && currentColumn == goalColumn)
+        return false;
     int rowDiff = abs(goalRow - currentRow);
     int colDiff = abs(goalColumn - currentColumn);
 

@@ -106,7 +106,7 @@ void Chess::show() const
 // clear screen and print the board and the relevant msg 
 void Chess::displayBoard() const
 {
-	clear();
+	//clear();
 	show();
 	cout << m_msg<< m_errorMsg;
 	
@@ -202,6 +202,7 @@ void Chess::doTurn()
 		m_msg = "Castling performed successfully \n";
 		break;
 	case 44:
+		excute();
 		switch (gameState) {
 		case WHITE_WIN: 
 			m_msg = "Checkmate! White wins the game.\n";

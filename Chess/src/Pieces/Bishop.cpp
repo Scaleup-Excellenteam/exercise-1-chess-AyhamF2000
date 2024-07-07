@@ -2,7 +2,7 @@
 
 // Bishops move diagonally
 bool Bishop::isMoveLegal(int currentRow, int currentColumn, int goalRow, int goalColumn, const Board& board) const {
-    if (abs(goalRow - currentRow) != abs(goalColumn - currentColumn))
+    if (abs(goalRow - currentRow) != abs(goalColumn - currentColumn) || (currentRow == goalRow && currentColumn == goalColumn))
         return false;  
 
     // Check if path is clear

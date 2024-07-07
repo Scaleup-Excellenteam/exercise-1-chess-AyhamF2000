@@ -331,21 +331,19 @@ bool Board::isKingInCheck(const char color) {
  * @return bool True if the king can escape check, false otherwise.
  */
 bool Board::canEscapeCheck(const char color) {
-    
-    for (int currentRow = 0; currentRow < board.size(); ++currentRow) {
-        for (int currentColumn = 0; currentColumn < board[currentRow].size(); ++currentColumn) {
+    for (int currentRow = 0; currentRow < BOARD_SIZE; ++currentRow) {
+        for (int currentColumn = 0; currentColumn < BOARD_SIZE; ++currentColumn) {
             std::shared_ptr<Piece> piece = board[currentRow][currentColumn];
 
-            // Check if the cell contains an opponent's piece
+            // Check if the cell contains a piece of the current player's color
             if (piece && piece->getColor() == color) {
+                for (int goalRow = 0; goalRow < BOARD_SIZE; ++goalRow) {
+                    for (int goalColumn = 0; goalColumn < BOARD_SIZE; ++goalColumn) {
+                        if (goalRow == currentRow && goalColumn == currentColumn)
+                            continue;  // Skip if the goal is the same as the current position
 
-                
-                for (int goalRow = 0; goalRow < board.size(); ++goalRow) {
-                    for (int goalColumn = 0; goalColumn < board[goalRow].size(); ++goalColumn) {  
-
-                        // Make all the legal moves for the opponent's piece
+                        // Check if the piece can legally move to the goal position
                         if (piece->isMoveLegal(currentRow, currentColumn, goalRow, goalColumn, *this)) {
-
                             // Simulate the move
                             std::shared_ptr<Piece> temp = board[goalRow][goalColumn];
                             board[goalRow][goalColumn] = piece;
@@ -358,7 +356,8 @@ bool Board::canEscapeCheck(const char color) {
                             board[goalRow][goalColumn] = temp;
 
                             if (!isInCheck) {
-                                //std::cout << currentRow << currentColumn << goalRow << goalColumn <<std::endl;
+                                std::cout << "Move from (" << currentRow << ", " << currentColumn << ") to ("
+                                    << goalRow << ", " << goalColumn << ") is legal and avoids check." << std::endl;
                                 return true;  // Found a legal move to escape check
                             }
                         }
@@ -369,6 +368,7 @@ bool Board::canEscapeCheck(const char color) {
     }
     return false;
 }
+
 
 bool Board::checkForCastling(int currentRow, int currentColumn, int goalRow, int goalColumn, const char playerColor) {
     if (board[currentRow][currentColumn]->getName() == 'K' && !board[currentRow][currentColumn]->hasMoved() && currentRow == goalRow) {

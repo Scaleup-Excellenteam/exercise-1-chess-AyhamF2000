@@ -356,8 +356,8 @@ bool Board::canEscapeCheck(const char color) {
                             board[goalRow][goalColumn] = temp;
 
                             if (!isInCheck) {
-                                std::cout << "Move from (" << currentRow << ", " << currentColumn << ") to ("
-                                    << goalRow << ", " << goalColumn << ") is legal and avoids check." << std::endl;
+                                /*std::cout << "Move from (" << currentRow << ", " << currentColumn << ") to ("
+                                    << goalRow << ", " << goalColumn << ") is legal and avoids check." << std::endl;*/
                                 return true;  // Found a legal move to escape check
                             }
                         }

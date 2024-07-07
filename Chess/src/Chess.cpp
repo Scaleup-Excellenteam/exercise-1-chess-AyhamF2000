@@ -1,4 +1,5 @@
 	#include "Chess.h"
+#include "ChessExceptions.h"
 
 // clear the screen "cls"
 void Chess::clear() const 
@@ -106,7 +107,7 @@ void Chess::show() const
 // clear screen and print the board and the relevant msg 
 void Chess::displayBoard() const
 {
-	clear();
+	//clear();
 	show();
 	cout << m_msg<< m_errorMsg;
 	
@@ -160,27 +161,37 @@ void Chess::doTurn()
 	{
 	case 11:
 	{
-		m_msg = "there is not piece at the source \n";
+		//m_msg = "there is not piece at the source \n";
+		m_msg = "";
+		throw PieceNotFoundException("No piece at the source location.");
 		break;
 	}
 	case 12:
 	{
-		m_msg = "the piece in the source is piece of your opponent \n";
+		m_msg = "";
+		//m_msg = "the piece in the source is piece of your opponent \n";
+		throw InvalidMoveException("The piece in the source location belongs to the opponent.");
 		break;
 	}
 	case 13:
 	{
-		m_msg = "there one of your pieces at the destination \n";
+		m_msg = "";
+		//m_msg = "there one of your pieces at the destination \n";
+		throw InvalidMoveException("There is already a piece of the same color at the destination.");
 		break;
 	}
 	case 21:
 	{
-		m_msg = "illegal movement of that piece \n";
+		m_msg = "";
+		throw InvalidMoveException("Illegal movement of that piece.");
+		//m_msg = "illegal movement of that piece \n";
 		break;
 	}
 	case 31:
 	{
-		m_msg = "this movement will cause you checkmate \n";
+		m_msg = "";
+		//m_msg = "this movement will cause you checkmate \n";
+		throw CheckException("Illegal move: it leaves the king in check.");
 		break;
 	}
 	case 41:
@@ -269,11 +280,26 @@ Chess::Chess(const string& start)
 string Chess::getInput()
 {
 	static bool isFirst = true;
-
+	clear();
 	if (isFirst)
 		isFirst = false;
-	else
-		doTurn(); 
+	else {
+		try {
+			doTurn();
+		}
+		catch (const InvalidMoveException& e) {
+			std::cerr << "Invalid move: " << e.what() << std::endl;
+		}
+		catch (const PieceNotFoundException& e) {
+			std::cerr << "Piece not found: " << e.what() << std::endl;
+		}
+		catch (const CheckException& e) {
+			std::cerr << "Check error: " << e.what() << std::endl;
+		}
+		catch (const std::exception& e) {
+			std::cerr << "An error occurred: " << e.what() << std::endl;
+		}
+	}
 
 	displayBoard();
 	showAskInput();

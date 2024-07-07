@@ -1,11 +1,11 @@
-// ChessExceptions.h
 #pragma once
 #include <exception>
 #include <string>
 
-class ChessException : public std::exception {
+// Exception thrown when an invalid move is attempted
+class InvalidMoveException : public std::exception {
 public:
-    ChessException(const std::string& message) : msg_(message) {}
+    InvalidMoveException(const std::string& message) : msg_(message) {}
     virtual const char* what() const noexcept override {
         return msg_.c_str();
     }
@@ -13,12 +13,24 @@ private:
     std::string msg_;
 };
 
-class InvalidMoveException : public ChessException {
+// Exception thrown when no piece is found at a specified position
+class PieceNotFoundException : public std::exception {
 public:
-    InvalidMoveException(const std::string& message) : ChessException(message) {}
+    PieceNotFoundException(const std::string& message) : msg_(message) {}
+    virtual const char* what() const noexcept override {
+        return msg_.c_str();
+    }
+private:
+    std::string msg_;
 };
 
-class CheckmateException : public ChessException {
+// Exception thrown when a move results in a check condition
+class CheckException : public std::exception {
 public:
-    CheckmateException(const std::string& message) : ChessException(message) {}
+    CheckException(const std::string& message) : msg_(message) {}
+    virtual const char* what() const noexcept override {
+        return msg_.c_str();
+    }
+private:
+    std::string msg_;
 };

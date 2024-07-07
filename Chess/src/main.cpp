@@ -66,8 +66,11 @@ int main()
 			} 
         }
 		
-		a.setCodeResponse(codeResponse);
-		res = a.getInput();
+			a.setCodeResponse(codeResponse);
+			res = a.getInput();
+		
+		
+
 	}
 
 	cout << endl << "Exiting " << endl; 

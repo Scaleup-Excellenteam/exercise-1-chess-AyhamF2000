@@ -112,12 +112,16 @@ void Board::setupBoard(const std::string& boardStr) {
 
 
 /**
- * @brief Return the piece at the specified position.
+ * @brief Returns the piece at the specified position.
  *
- * @param row The row of the position.
- * @param column The column of the position.
- * @return std::shared_ptr<Piece> The piece at the specified position.
+ * This method retrieves the piece located at the specified row and column on the board.
+ * If the position is out of bounds, it returns nullptr.
+ *
+ * @param row The row index of the position (0-based).
+ * @param column The column index of the position (0-based).
+ * @return std::shared_ptr<Piece> The piece at the specified position, or nullptr if the position is out of bounds or empty.
  */
+
 std::shared_ptr<Piece> Board::getPiece(int row, int column) const {
     if(row >= 0 && row < BOARD_SIZE && column >= 0 && column < BOARD_SIZE)
         return board[row][column];
@@ -131,10 +135,14 @@ std::shared_ptr<Piece> Board::getPiece(int row, int column) const {
 /**
  * @brief Creates a piece based on its type/name and color.
  *
- * @param type The type/name of the piece ('R', 'N', 'B', 'Q', 'K', 'P').
+ * This method instantiates a chess piece based on the given type and color.
+ * It returns a shared pointer to the created piece.
+ *
+ * @param type The type of the piece ('R' for Rook, 'N' for Knight, 'B' for Bishop, 'Q' for Queen, 'K' for King, 'P' for Pawn).
  * @param color The color of the piece ('W' for white, 'B' for black).
- * @return std::shared_ptr<Piece> The created piece.
+ * @return std::shared_ptr<Piece> A shared pointer to the created piece.
  */
+
 std::shared_ptr<Piece> Board::createPiece(const char type, const char color) {
     switch (std::toupper(type)) {
     case 'R':
@@ -159,15 +167,20 @@ std::shared_ptr<Piece> Board::createPiece(const char type, const char color) {
 
 
 /**
- * @brief Return the CodeResponse.
+ * @brief Checks the validity of a move and returns a code indicating the result.
+ *
+ * This method verifies whether a move from the current position to the goal position is valid.
+ * It checks for various conditions such as the presence of a piece at the source, ownership of the piece,
+ * legality of the move, and whether the move puts the player's king in check.
  *
  * @param currentRow The starting row of the piece.
  * @param currentColumn The starting column of the piece.
  * @param goalRow The destination row of the piece.
  * @param goalColumn The destination column of the piece.
  * @param playerColor The color of the player making the move.
- * @return int The result code indicating the legality and result of the move.
+ * @return int A code indicating the result of the move .
  */
+
 int Board::checkMove(const int currentRow, const int currentColumn, const int goalRow, const int goalColumn, const char playerColor) {
 
     // This statement is handled in the Chess.cpp
@@ -250,9 +263,13 @@ int Board::checkMove(const int currentRow, const int currentColumn, const int go
 /**
  * @brief Retrieves the king of the specified color.
  *
- * @param color The color of the king.
- * @return std::shared_ptr<Piece>& The king piece.
+ * This method returns a reference to the king piece of the given color on the board.
+ * If the king is not found, it returns a reference to a static null shared pointer.
+ *
+ * @param color The color of the king ('W' for white, 'B' for black).
+ * @return std::shared_ptr<Piece>& A reference to the king piece of the specified color.
  */
+
 std::shared_ptr<Piece>& Board::getTheKingByColor(const char color) {
     for (auto& row : board) {
         for (auto& piece : row) {
@@ -275,9 +292,13 @@ std::shared_ptr<Piece>& Board::getTheKingByColor(const char color) {
 /**
  * @brief Retrieves the position of the king of the specified color.
  *
- * @param color The color of the king.
- * @return std::pair<int, int> The row and column of the king.
+ * This method returns the position of the king of the given color on the board as a pair of row and column indices.
+ * If the king is not found, it returns a pair of invalid indices (-1, -1).
+ *
+ * @param color The color of the king ('W' for white, 'B' for black).
+ * @return std::pair<int, int> The row and column indices of the king's position, or (-1, -1) if the king is not found.
  */
+
 std::pair<int, int> Board::getKingPositionByColor(const char color) {
     for (int row = 0; row < board.size(); ++row) {
         for (int col = 0; col < board[row].size(); ++col) {
@@ -296,9 +317,13 @@ std::pair<int, int> Board::getKingPositionByColor(const char color) {
 /**
  * @brief Checks if the king of the specified color is in check.
  *
- * @param color The color of the king.
+ * This method determines whether the king of the given color is in check.
+ * It iterates over all pieces on the board and checks if any of them can legally move to the king's position.
+ *
+ * @param color The color of the king ('W' for white, 'B' for black).
  * @return bool True if the king is in check, false otherwise.
  */
+
 bool Board::isKingInCheck(const char color) {
     std::pair<int, int> kingPosition = getKingPositionByColor(color);
     int kingRow = kingPosition.first;
@@ -327,9 +352,13 @@ bool Board::isKingInCheck(const char color) {
 /**
  * @brief Checks if the king of the specified color can escape check.
  *
- * @param color The color of the king.
+ * This method determines whether the king of the given color can escape check by making a legal move.
+ * It iterates over all pieces of the given color and checks if any legal move can remove the check condition.
+ *
+ * @param color The color of the king ('W' for white, 'B' for black).
  * @return bool True if the king can escape check, false otherwise.
  */
+
 bool Board::canEscapeCheck(const char color) {
     for (int currentRow = 0; currentRow < BOARD_SIZE; ++currentRow) {
         for (int currentColumn = 0; currentColumn < BOARD_SIZE; ++currentColumn) {
@@ -370,6 +399,22 @@ bool Board::canEscapeCheck(const char color) {
 }
 
 
+
+
+
+/**
+ * @brief Checks if castling is possible and performs it if legal.
+ *
+ * This method verifies whether castling is possible for the king at the given position.
+ * It checks for the conditions required for castling and performs the move if it is legal.
+ *
+ * @param currentRow The row of the king's current position.
+ * @param currentColumn The column of the king's current position.
+ * @param goalRow The row of the king's destination position.
+ * @param goalColumn The column of the king's destination position.
+ * @param playerColor The color of the player making the move.
+ * @return bool True if castling was performed successfully, false otherwise.
+ */
 bool Board::checkForCastling(int currentRow, int currentColumn, int goalRow, int goalColumn, const char playerColor) {
     if (board[currentRow][currentColumn]->getName() == 'K' && !board[currentRow][currentColumn]->hasMoved() && currentRow == goalRow) {
         bool validCastling = false;
@@ -439,11 +484,18 @@ bool Board::checkForCastling(int currentRow, int currentColumn, int goalRow, int
     }
     return false;
 }
-bool Board::endGameWithCheckmate() {
-    
-    return false;
-}
 
+
+
+
+
+/**
+ * @brief Retrieves the current game state.
+ *
+ * This method returns the current state of the game, indicating whether white wins, black wins, the game is a draw, or still playing.
+ *
+ * @return GameState The current state of the game.
+ */
 Board::GameState Board::getGameState() const {
     return gameState;
 }

@@ -26,7 +26,6 @@ private:
     bool isKingInCheck(const char color);
     bool canEscapeCheck(const char color);
     bool checkForCastling(int currentRow, int currentColumn, int goalRow, int goalColumn, const char playerColor);
-    bool endGameWithCheckmate();
 
     
     GameState gameState;

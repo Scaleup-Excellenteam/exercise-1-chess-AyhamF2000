@@ -10,6 +10,7 @@
 #include <string>
 #include <stdexcept>
 #include <iostream>
+#include <memory>  
 
 /**
  * @brief Constructs the Board and sets up the initial pieces.
@@ -450,6 +451,13 @@ bool Board::checkForCastling(int currentRow, int currentColumn, int goalRow, int
                         board[currentRow][currentColumn] = nullptr;
 
                         validCastling = true;
+
+                        std::shared_ptr<Piece> rook_ = board[goalRow][currentColumn + 1];
+                        auto rookPiece = std::dynamic_pointer_cast<Rook>(rook_);  // Cast to King
+
+                        if (rookPiece) {  // Check if the cast was successful
+                            rookPiece->FirstMove = false;  // Access and modify FirstMove
+                        }
                     }
                 }
             }
@@ -479,12 +487,25 @@ bool Board::checkForCastling(int currentRow, int currentColumn, int goalRow, int
                         board[currentRow][currentColumn] = nullptr;
 
                         validCastling = true;
+
+                        std::shared_ptr<Piece> rook_ = board[goalRow][currentColumn - 1];
+                        auto rookPiece = std::dynamic_pointer_cast<Rook>(rook_);  // Cast to King
+
+                        if (rookPiece) {  // Check if the cast was successful
+                            rookPiece->FirstMove = false;  // Access and modify FirstMove
+                        }
                     }
                 }
             }
         }
 
         if (validCastling) {
+            std::shared_ptr<Piece> piece = board[currentRow][currentColumn];
+            auto kingPiece = std::dynamic_pointer_cast<King>(piece);  // Cast to King
+
+            if (kingPiece) {  // Check if the cast was successful
+                kingPiece->FirstMove = false;  // Access and modify FirstMove
+            }
             return true;  // Castling performed successfully
         }
     }

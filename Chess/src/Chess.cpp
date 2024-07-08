@@ -107,9 +107,11 @@ void Chess::show() const
 // clear screen and print the board and the relevant msg 
 void Chess::displayBoard() const
 {
-	//clear();
+	clear();
 	show();
+	cout << move << endl;
 	cout << m_msg<< m_errorMsg;
+	
 	
 }
 // print the who is turn before getting input 
@@ -280,7 +282,6 @@ Chess::Chess(const string& start)
 string Chess::getInput()
 {
 	static bool isFirst = true;
-	//clear();
 	if (isFirst)
 		isFirst = false;
 	else {
@@ -288,16 +289,28 @@ string Chess::getInput()
 			doTurn();
 		}
 		catch (const InvalidMoveException& e) {
-			std::cerr << "Invalid move: " << e.what() << std::endl;
+			m_errorMsg = "Invalid move: ";
+			m_errorMsg += e.what();
+			m_errorMsg += '\n';
+			//std::cerr << "Invalid move: " << e.what() << std::endl;
 		}
 		catch (const PieceNotFoundException& e) {
-			std::cerr << "Piece not found: " << e.what() << std::endl;
+			m_errorMsg = "Piece not found: ";
+			m_errorMsg += e.what();
+			m_errorMsg += '\n';
+			//std::cerr << "Piece not found: " << e.what() << std::endl;
 		}
 		catch (const CheckException& e) {
-			std::cerr << "Check error: " << e.what() << std::endl;
+			m_errorMsg = "Check error: ";
+			m_errorMsg += e.what();
+			m_errorMsg += '\n';
+			//std::cerr << "Check error: " << e.what() << std::endl;
 		}
 		catch (const std::exception& e) {
-			std::cerr << "An error occurred: " << e.what() << std::endl;
+			m_errorMsg = "An error occurred: ";
+			m_errorMsg += e.what();
+			m_errorMsg += '\n';
+			//std::cerr << "An error occurred: " << e.what() << std::endl;
 		}
 	}
 
@@ -342,4 +355,9 @@ void Chess::setCodeResponse(int codeResponse)
 
 void Chess::setGameState(GameState state) {
 	gameState = state;
+}
+
+void Chess::SetEvaluateMove(Move move)
+{
+	this->move = move;
 }

@@ -65,22 +65,7 @@ int MoveEvaluator::evaluateMove(int currentRow, int currentColumn, int goalRow, 
     board.setPiece(currentRow, currentColumn, nullptr);
 
     // Check if the move puts the piece in danger
-    bool pieceInDanger = false;
-    for (int row = 0; row < BOARD_SIZE; ++row) {
-        for (int col = 0; col < BOARD_SIZE; ++col) {
-            std::shared_ptr<Piece> opponentPiece = board.getPiece(row, col);
-            if (opponentPiece && opponentPiece->getColor() != playerColor) {
-                if (opponentPiece->isMoveLegal(row, col, goalRow, goalColumn, board)) {
-                    pieceInDanger = true;
-                    break;
-                }
-            }
-        }
-        if (pieceInDanger) break;
-    }
-    if (pieceInDanger) {
-        score -= pieceValues[piece->getName()];
-    }
+    score += evaluateThreats(currentRow, currentColumn, goalRow, goalColumn, piece);
 
     // Evaluate board control
     score += evaluateBoardControl();
@@ -108,10 +93,35 @@ int MoveEvaluator::evaluateMove(int currentRow, int currentColumn, int goalRow, 
         score -= bestOpponentScore;
     }
 
+    // Handle pawn promotion
+    handlePawnPromotion(goalRow, piece);
+
     // Undo the move
     board.setPiece(currentRow, currentColumn, board.getPiece(goalRow, goalColumn));
     board.setPiece(goalRow, goalColumn, temp);
 
+    return score;
+}
+
+int MoveEvaluator::evaluateThreats(int currentRow, int currentColumn, int goalRow, int goalColumn, const std::shared_ptr<Piece>& piece) {
+    int score = 0;
+    for (int row = 0; row < BOARD_SIZE; ++row) {
+        for (int col = 0; col < BOARD_SIZE; ++col) {
+            std::shared_ptr<Piece> opponentPiece = board.getPiece(row, col);
+            if (opponentPiece && opponentPiece->getColor() != playerColor) {
+                if (opponentPiece->isMoveLegal(row, col, goalRow, goalColumn, board)) {
+                    if (pieceValues[opponentPiece->getName()] < pieceValues[piece->getName()]) {
+                        score -= pieceValues[piece->getName()]; // In danger by a weaker piece
+                    }
+                }
+                if (opponentPiece->isMoveLegal(row, col, currentRow, currentColumn, board)) {
+                    if (pieceValues[opponentPiece->getName()] > pieceValues[piece->getName()]) {
+                        score += pieceValues[opponentPiece->getName()]; // Threatening a stronger piece
+                    }
+                }
+            }
+        }
+    }
     return score;
 }
 
@@ -142,6 +152,30 @@ int MoveEvaluator::evaluateBoardControl() const {
 
     controlScore = playerCoverage - opponentCoverage;
     return controlScore;
+}
+
+void MoveEvaluator::handlePawnPromotion(int goalRow, std::shared_ptr<Piece>& piece) {
+    if (piece->getName() == 'P' && (goalRow == 0 || goalRow == 7)) {
+        char choice;
+        std::cout << "Promote pawn to (Q/R/B/N): ";
+        std::cin >> choice;
+        switch (choice) {
+        case 'Q':
+            piece->setName('Q');
+            break;
+        case 'R':
+            piece->setName('R');
+            break;
+        case 'B':
+            piece->setName('B');
+            break;
+        case 'N':
+            piece->setName('N');
+            break;
+        default:
+            throw std::invalid_argument("Invalid promotion choice");
+        }
+    }
 }
 
 std::ostream& operator<<(std::ostream& os, const std::vector<Move>& moves) {

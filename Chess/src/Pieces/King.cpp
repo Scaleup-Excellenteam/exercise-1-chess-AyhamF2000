@@ -11,8 +11,5 @@ bool King::isMoveLegal(int currentRow, int currentColumn, int goalRow, int goalC
     if (goalPiece && goalPiece->getColor() == this->getColor())
         return false; // Move is not legal because a piece of the same color is in the goal position
 
-    if (this->FirstMove == true && rowDiff <= 1 && colDiff <= 1)
-        this->FirstMove = false;
-
     return (rowDiff <= 1 && colDiff <= 1);  
 }

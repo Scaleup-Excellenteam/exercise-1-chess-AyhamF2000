@@ -20,6 +20,8 @@ private:
     void initializePieceValues();
     int evaluateMove(int currentRow, int currentColumn, int goalRow, int goalColumn, int depth);
     int evaluateBoardControl() const;
+    int evaluateThreats(int currentRow, int currentColumn, int goalRow, int goalColumn, const std::shared_ptr<Piece>& piece);
+    void handlePawnPromotion(int goalRow, std::shared_ptr<Piece>& piece);
 };
 
 std::ostream& operator<<(std::ostream& os, const std::vector<Move>& moves);

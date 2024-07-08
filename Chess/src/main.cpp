@@ -4,8 +4,8 @@
 #include "Board.h"
 int main()
 {
-	string board = "RNBQKBNRPPPPPPPP################################pppppppprnbqkbnr";
-	//string board = "R###K##R####PPPPb###############################ppppppppr###k##r";// to check the castling
+	//string board = "RNBQKBNRPPPPPPPP################################pppppppprnbqkbnr";
+	string board = "R###K##R####PPPPb###############################ppppppppr###k##r";// to check the castling
 	//string board = "RNBQK###PPPPPPPP############################################kbnr";
 
 	Chess a(board);
@@ -14,7 +14,7 @@ int main()
 	char myColor = 'W';
 
 	int codeResponse = 0;
-	std::cout << myBoard.getBestMove(myColor, 0) << std::endl;
+	a.SetEvaluateMove(myBoard.getBestMove(myColor, 0));
 	string res = a.getInput();
 	while (res != "exit")
 	{
@@ -70,7 +70,7 @@ int main()
         }
 		
 			a.setCodeResponse(codeResponse);
-			std::cout << myBoard.getBestMove(myColor, 0) << std::endl;
+			a.SetEvaluateMove(myBoard.getBestMove(myColor, 0));
 			res = a.getInput();
 		
 		

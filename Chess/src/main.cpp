@@ -14,9 +14,12 @@ int main()
 	char myColor = 'W';
 
 	int codeResponse = 0;
+	std::cout << myBoard.getBestMove(myColor, 0) << std::endl;
 	string res = a.getInput();
 	while (res != "exit")
 	{
+		
+
 		/* 
 		codeResponse value : 
 		Illegal movements : 
@@ -67,6 +70,7 @@ int main()
         }
 		
 			a.setCodeResponse(codeResponse);
+			std::cout << myBoard.getBestMove(myColor, 0) << std::endl;
 			res = a.getInput();
 		
 		

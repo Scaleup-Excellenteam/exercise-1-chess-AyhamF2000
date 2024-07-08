@@ -3,7 +3,8 @@
 #include <memory>
 #include "Piece.h"  // Adjust the path if necessary.
 #include <string>
-
+#include "Move.h"
+#include "MoveEvaluator.h"
 const int BOARD_SIZE = 8;
 
 class Board {
@@ -16,17 +17,18 @@ public:
     void setupBoard();
     void setupBoard(const std::string&);
     std::shared_ptr<Piece> getPiece(int row, int column) const;
+    void setPiece(int row, int column, std::shared_ptr<Piece> piece);
     GameState getGameState() const;
+    bool isKingInCheck(const char color);
+    Move getBestMove(char playerColor, int depth = 1);
 
 private:
     std::vector<std::vector<std::shared_ptr<Piece>>> board;
     std::shared_ptr<Piece> createPiece(const char type, const char color);
     std::shared_ptr<Piece>& getTheKingByColor(const char color);
     std::pair<int, int> getKingPositionByColor(const char color);
-    bool isKingInCheck(const char color);
     bool canEscapeCheck(const char color);
     bool checkForCastling(int currentRow, int currentColumn, int goalRow, int goalColumn, const char playerColor);
-
     
     GameState gameState;
 

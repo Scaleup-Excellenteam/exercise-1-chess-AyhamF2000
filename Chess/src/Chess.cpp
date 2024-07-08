@@ -280,7 +280,7 @@ Chess::Chess(const string& start)
 string Chess::getInput()
 {
 	static bool isFirst = true;
-	clear();
+	//clear();
 	if (isFirst)
 		isFirst = false;
 	else {

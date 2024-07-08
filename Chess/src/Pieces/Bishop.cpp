@@ -18,5 +18,8 @@ bool Bishop::isMoveLegal(int currentRow, int currentColumn, int goalRow, int goa
         col += colStep;
     }
 
+    std::shared_ptr<Piece> goalPiece = board.getPiece(goalRow, goalColumn);
+    if (goalPiece != nullptr && goalPiece->getColor() == this->getColor())
+        return false;
     return true;
 }

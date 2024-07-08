@@ -131,6 +131,13 @@ std::shared_ptr<Piece> Board::getPiece(int row, int column) const {
 
 
 
+void Board::setPiece(int row, int column, std::shared_ptr<Piece> piece) {
+    board[row][column] = piece;
+}
+
+
+
+
 
 /**
  * @brief Creates a piece based on its type/name and color.
@@ -246,7 +253,6 @@ int Board::checkMove(const int currentRow, const int currentColumn, const int go
 
         return 44;  // this movement will cause checkmate
     }
-
     // Check if the move causes check
     if (isKingInCheck(opponentColor)) {
         return 41;  // the last movement was legal and caused check
@@ -498,4 +504,19 @@ bool Board::checkForCastling(int currentRow, int currentColumn, int goalRow, int
  */
 Board::GameState Board::getGameState() const {
     return gameState;
+}
+
+
+
+
+Move Board::getBestMove(char playerColor, int depth) {
+    MoveEvaluator evaluator(*this, playerColor);
+    evaluator.evaluateMoves(depth);
+    std::vector<Move> bestMoves = evaluator.getBestMoves();
+
+    if (!bestMoves.empty()) {
+        return bestMoves.front(); // Return the best move
+    }
+
+    throw std::runtime_error("No valid moves available.");
 }

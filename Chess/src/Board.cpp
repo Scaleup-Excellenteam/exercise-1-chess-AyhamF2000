@@ -199,7 +199,7 @@ int Board::checkMove(const int currentRow, const int currentColumn, const int go
         
         return 21;
     }*/
-
+    boardToString();
     char opponentColor = (playerColor == 'W' ? 'B' : 'W');
     if (!board[currentRow][currentColumn])
         return 11;  // there is no piece at the source
@@ -254,6 +254,9 @@ int Board::checkMove(const int currentRow, const int currentColumn, const int go
 
         return 44;  // this movement will cause checkmate
     }
+
+    handlePawnPromotion(goalRow,board[goalRow][goalColumn]);
+    
     // Check if the move causes check
     if (isKingInCheck(opponentColor)) {
         return 41;  // the last movement was legal and caused check
@@ -276,7 +279,6 @@ int Board::checkMove(const int currentRow, const int currentColumn, const int go
  * @param color The color of the king ('W' for white, 'B' for black).
  * @return std::shared_ptr<Piece>& A reference to the king piece of the specified color.
  */
-
 std::shared_ptr<Piece>& Board::getTheKingByColor(const char color) {
     for (auto& row : board) {
         for (auto& piece : row) {
@@ -305,7 +307,6 @@ std::shared_ptr<Piece>& Board::getTheKingByColor(const char color) {
  * @param color The color of the king ('W' for white, 'B' for black).
  * @return std::pair<int, int> The row and column indices of the king's position, or (-1, -1) if the king is not found.
  */
-
 std::pair<int, int> Board::getKingPositionByColor(const char color) {
     for (int row = 0; row < board.size(); ++row) {
         for (int col = 0; col < board[row].size(); ++col) {
@@ -330,7 +331,6 @@ std::pair<int, int> Board::getKingPositionByColor(const char color) {
  * @param color The color of the king ('W' for white, 'B' for black).
  * @return bool True if the king is in check, false otherwise.
  */
-
 bool Board::isKingInCheck(const char color) {
     std::pair<int, int> kingPosition = getKingPositionByColor(color);
     int kingRow = kingPosition.first;
@@ -365,7 +365,6 @@ bool Board::isKingInCheck(const char color) {
  * @param color The color of the king ('W' for white, 'B' for black).
  * @return bool True if the king can escape check, false otherwise.
  */
-
 bool Board::canEscapeCheck(const char color) {
     for (int currentRow = 0; currentRow < BOARD_SIZE; ++currentRow) {
         for (int currentColumn = 0; currentColumn < BOARD_SIZE; ++currentColumn) {
@@ -529,15 +528,105 @@ Board::GameState Board::getGameState() const {
 
 
 
-
+/**
+ * @brief Gets the best move for the given player color with the specified depth.
+ *
+ * This function uses the MoveEvaluator to evaluate all possible moves for the given player color
+ * up to the specified depth. It returns the best move found.
+ *
+ * @param playerColor The color of the player ('W' for white, 'B' for black).
+ * @param depth The depth of the move evaluation.
+ * @return Move The best move found for the given player color.
+ * @throw std::runtime_error If no valid moves are available.
+ */
 Move Board::getBestMove(char playerColor, int depth) {
     MoveEvaluator evaluator(*this, playerColor);
     evaluator.evaluateMoves(depth);
     std::vector<Move> bestMoves = evaluator.getBestMoves();
+    std::cout << bestMoves << std::endl;
 
     if (!bestMoves.empty()) {
         return bestMoves.front(); // Return the best move
     }
 
     throw std::runtime_error("No valid moves available.");
+}
+
+
+
+
+
+/**
+ * @brief Handles the promotion of a pawn when it reaches the end of the board.
+ *
+ * This function prompts the user to choose a piece for the pawn to be promoted to when it reaches
+ * the last row of the board. The user can choose to promote the pawn to a Queen, Rook, Bishop, or Knight.
+ *
+ * @param goalRow The row where the pawn has reached.
+ * @param piece The shared pointer to the pawn piece.
+ * @return bool True if the promotion was successful, false otherwise.
+ */
+bool Board::handlePawnPromotion(int goalRow, std::shared_ptr<Piece>& piece) {
+    if(piece)
+    if (piece->getName() == 'P' && (goalRow == 0 || goalRow == 7)) {
+        char choice;
+        std::cout << "Promote pawn to (Q/R/B/N): ";
+        std::cin >> choice;
+        char color = piece->getColor();
+        switch (choice) {
+        case 'Q':
+            piece = createPiece('Q',color);
+            boardToString();
+            return true;
+        case 'R':
+            piece = std::make_shared<Rook>(color, 'R');
+            return true;
+        case 'B':
+            piece = std::make_shared<Bishop>(color, 'B');
+            return true;
+        case 'N':
+            piece = std::make_shared<Knight>(color, 'N');
+            return true;
+        default:
+            return false;
+        }
+        return false;
+    }
+    return false;
+}
+
+
+
+
+
+/**
+ * @brief Converts the board to a string representation.
+ *
+ * This function creates a string representation of the current state of the board.
+ * Each piece is represented by its character, and empty squares are represented by '#'.
+ * White pieces are represented in uppercase, and black pieces are represented in lowercase.
+ *
+ * @return std::string The string representation of the board.
+ */
+std::string Board::boardToString() const {
+    std::stringstream ss;
+    for (const auto& row : board) {
+        for (const auto& piece : row) {
+            if (piece) {
+                char pieceChar = piece->getName();
+                if (piece->getColor() == 'W') {
+                    ss << pieceChar;  // White pieces already in uppercase
+                }
+                else {
+                    ss << char(std::tolower(pieceChar));  // Black pieces in lowercase
+                }
+            }
+            else {
+                ss << '#';
+            }
+        }
+    }
+    std::string boardStr = ss.str();
+    //std::cout << boardStr << std::endl;
+    return boardStr;
 }

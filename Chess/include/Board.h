@@ -5,6 +5,8 @@
 #include <string>
 #include "Move.h"
 #include "MoveEvaluator.h"
+#include <sstream>
+
 const int BOARD_SIZE = 8;
 
 class Board {
@@ -21,15 +23,18 @@ public:
     GameState getGameState() const;
     bool isKingInCheck(const char color);
     Move getBestMove(char playerColor, int depth = 1);
+    std::string boardToString() const;
+    bool handlePawnPromotion(int goalRow, std::shared_ptr<Piece>& piece);
+    bool canEscapeCheck(const char color);
 
 private:
     std::vector<std::vector<std::shared_ptr<Piece>>> board;
     std::shared_ptr<Piece> createPiece(const char type, const char color);
     std::shared_ptr<Piece>& getTheKingByColor(const char color);
     std::pair<int, int> getKingPositionByColor(const char color);
-    bool canEscapeCheck(const char color);
     bool checkForCastling(int currentRow, int currentColumn, int goalRow, int goalColumn, const char playerColor);
-    
+   
+
     GameState gameState;
 
 };

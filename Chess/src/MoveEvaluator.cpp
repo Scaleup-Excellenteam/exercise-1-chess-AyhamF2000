@@ -70,6 +70,11 @@ int MoveEvaluator::evaluateMove(int currentRow, int currentColumn, int goalRow, 
     // Evaluate board control
     score += evaluateBoardControl();
 
+    char opponentColor = (playerColor == 'W') ? 'B' : 'W';
+    if (board.isKingInCheck(opponentColor) && !board.canEscapeCheck(opponentColor)) {
+        score += 10000;  // Arbitrary high score for checkmate
+    }
+    
     // Evaluate opponent's response if depth > 0
     if (depth > 0) {
         int bestOpponentScore = INT_MIN;
@@ -93,9 +98,6 @@ int MoveEvaluator::evaluateMove(int currentRow, int currentColumn, int goalRow, 
         score -= bestOpponentScore;
     }
 
-    // Handle pawn promotion
-    handlePawnPromotion(goalRow, piece);
-
     // Undo the move
     board.setPiece(currentRow, currentColumn, board.getPiece(goalRow, goalColumn));
     board.setPiece(goalRow, goalColumn, temp);
@@ -113,6 +115,7 @@ int MoveEvaluator::evaluateThreats(int currentRow, int currentColumn, int goalRo
             if (opponentPiece && opponentPiece->getColor() != playerColor) {
                 if (opponentPiece->isMoveLegal(row, col, goalRow, goalColumn, board)) {
                     if (pieceValues[opponentPiece->getName()] < pieceValues[piece->getName()]) {
+                        //std::cout << pieceValues[opponentPiece->getName()] <<'----' << pieceValues[piece->getName()] << std::endl;
                         score -= pieceValues[piece->getName()]; // In danger by a weaker piece
                     }
                 }
@@ -156,29 +159,6 @@ int MoveEvaluator::evaluateBoardControl() const {
     return controlScore;
 }
 
-void MoveEvaluator::handlePawnPromotion(int goalRow, std::shared_ptr<Piece>& piece) {
-    if (piece->getName() == 'P' && (goalRow == 0 || goalRow == 7)) {
-        char choice;
-        std::cout << "Promote pawn to (Q/R/B/N): ";
-        std::cin >> choice;
-        switch (choice) {
-        case 'Q':
-            piece->setName('Q');
-            break;
-        case 'R':
-            piece->setName('R');
-            break;
-        case 'B':
-            piece->setName('B');
-            break;
-        case 'N':
-            piece->setName('N');
-            break;
-        default:
-            throw std::invalid_argument("Invalid promotion choice");
-        }
-    }
-}
 
 std::ostream& operator<<(std::ostream& os, const std::vector<Move>& moves) {
     for (const auto& move : moves) {
@@ -186,3 +166,4 @@ std::ostream& operator<<(std::ostream& os, const std::vector<Move>& moves) {
     }
     return os;
 }
+

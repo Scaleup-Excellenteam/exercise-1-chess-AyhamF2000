@@ -5,8 +5,8 @@
 int main()
 {
 	//string board = "RNBQKBNRPPPPPPPP################################pppppppprnbqkbnr";
-	string board = "R###K##R####PPPPb###############################ppppppppr###k##r";// to check the castling
-	//string board = "RNBQK###PPPPPPPP############################################kbnr";
+	//string board = "R###K##R####PPPPb###############################ppppppppr###k##r";// to check the castling
+	string board = "RNBQK###PPPPPPPP##################################P##P######kbnr";
 
 	Chess a(board);
 
@@ -16,9 +16,10 @@ int main()
 	int codeResponse = 0;
 	a.SetEvaluateMove(myBoard.getBestMove(myColor, 0));
 	string res = a.getInput();
+
+	
 	while (res != "exit")
 	{
-		
 
 		/* 
 		codeResponse value : 
@@ -40,7 +41,12 @@ int main()
 
 			// Smart move to checkmate the black king in 4 moves:
 			// b6c6 g5e5 b7d7 h4d8
-			
+			/* 
+			b5e5
+			g5e5
+			a7c6
+			h2f3
+			*/
 
             std::stringstream stringNumber1,stringNumber2;
             stringNumber1 << res[1];
@@ -57,8 +63,12 @@ int main()
             goalColumn--;
 
             codeResponse = myBoard.checkMove(currentRow,currentColumn ,goalRow,goalColumn, myColor);
+			
+			
+			
 			if (codeResponse >= 41 && codeResponse <= 44)
 				myColor = (myColor == 'W' ? 'B' : 'W');
+
 
 			if (myBoard.getGameState() == Board::GameState::WHITE_WIN) { 
 				a.setGameState(Chess::WHITE_WIN);
@@ -68,12 +78,13 @@ int main()
 				a.setGameState(Chess::DRAW); 
 			} 
         }
-		
+
 			a.setCodeResponse(codeResponse);
+
 			a.SetEvaluateMove(myBoard.getBestMove(myColor, 0));
 			res = a.getInput();
-		
-		
+			
+			
 
 	}
 

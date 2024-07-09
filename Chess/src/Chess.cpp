@@ -107,7 +107,7 @@ void Chess::show() const
 // clear screen and print the board and the relevant msg 
 void Chess::displayBoard() const
 {
-	clear();
+	//clear();
 	show();
 	cout << move << endl;
 	cout << m_msg<< m_errorMsg;
@@ -361,3 +361,13 @@ void Chess::SetEvaluateMove(Move move)
 {
 	this->move = move;
 }
+
+
+
+
+
+//void Chess::changeBoardString(string newBoard) {
+//	this->m_boardString = newBoard;
+//	setPieces();
+//	excute();
+//}

@@ -43,5 +43,5 @@ public:
 	enum GameState { WHITE_WIN, BLACK_WIN, DRAW, STILL_PLAYING };
 	GameState gameState;
 	void setGameState(GameState state); 
-
+	//void changeBoardString(string newBoard);
 };

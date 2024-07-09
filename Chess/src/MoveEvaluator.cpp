@@ -100,6 +100,8 @@ int MoveEvaluator::evaluateMove(int currentRow, int currentColumn, int goalRow, 
     board.setPiece(currentRow, currentColumn, board.getPiece(goalRow, goalColumn));
     board.setPiece(goalRow, goalColumn, temp);
 
+    //std::cout << currentRow << currentColumn << '-' << goalRow << goalColumn << '-' << score << std::endl;
+
     return score;
 }
 

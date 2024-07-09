@@ -289,31 +289,30 @@ string Chess::getInput()
 			doTurn();
 		}
 		catch (const InvalidMoveException& e) {
-			m_errorMsg = "Invalid move: ";
+			m_errorMsg += "Invalid move: ";
 			m_errorMsg += e.what();
 			m_errorMsg += '\n';
 			//std::cerr << "Invalid move: " << e.what() << std::endl;
 		}
 		catch (const PieceNotFoundException& e) {
-			m_errorMsg = "Piece not found: ";
+			m_errorMsg += "Piece not found: ";
 			m_errorMsg += e.what();
 			m_errorMsg += '\n';
 			//std::cerr << "Piece not found: " << e.what() << std::endl;
 		}
 		catch (const CheckException& e) {
-			m_errorMsg = "Check error: ";
+			m_errorMsg += "Check error: ";
 			m_errorMsg += e.what();
 			m_errorMsg += '\n';
 			//std::cerr << "Check error: " << e.what() << std::endl;
 		}
 		catch (const std::exception& e) {
-			m_errorMsg = "An error occurred: ";
+			m_errorMsg += "An error occurred: ";
 			m_errorMsg += e.what();
 			m_errorMsg += '\n';
 			//std::cerr << "An error occurred: " << e.what() << std::endl;
 		}
 	}
-
 	displayBoard();
 	showAskInput();
 
@@ -322,6 +321,7 @@ string Chess::getInput()
 		return "exit";
 	while (!isValid() || isSame())
 	{
+		m_msg = "";
 		if (!isValid())
 			m_errorMsg = "Invalid input !! \n";
 		else

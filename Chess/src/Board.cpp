@@ -255,7 +255,8 @@ int Board::checkMove(const int currentRow, const int currentColumn, const int go
         return 44;  // this movement will cause checkmate
     }
 
-    handlePawnPromotion(goalRow,board[goalRow][goalColumn]);
+    if (handlePawnPromotion(goalRow, board[goalRow][goalColumn]))
+        return 45;
     
     // Check if the move causes check
     if (isKingInCheck(opponentColor)) {
@@ -578,16 +579,19 @@ bool Board::handlePawnPromotion(int goalRow, std::shared_ptr<Piece>& piece) {
         switch (choice) {
         case 'Q':
             piece = createPiece('Q',color);
-            boardToString();
+            Pawn_promotion_value = ( color=='W'? Q : q );
             return true;
         case 'R':
-            piece = std::make_shared<Rook>(color, 'R');
+            piece = createPiece('R', color);
+            Pawn_promotion_value = ( color == 'W' ? R : r );
             return true;
         case 'B':
-            piece = std::make_shared<Bishop>(color, 'B');
+            piece = createPiece('B', color);
+            Pawn_promotion_value = ( color == 'W' ? B : b );
             return true;
         case 'N':
-            piece = std::make_shared<Knight>(color, 'N');
+            piece = createPiece('N', color);
+            Pawn_promotion_value = ( color == 'W' ? N : n );
             return true;
         default:
             return false;
@@ -631,4 +635,20 @@ std::string Board::boardToString() const {
     std::string boardStr = ss.str();
     //std::cout << boardStr << std::endl;
     return boardStr;
+}
+
+
+
+
+/**
+ * @brief Gets the current pawn promotion value.
+ *
+ * This function returns the current value set for pawn promotion.
+ * The value corresponds to the type of piece to which a pawn will be promoted
+ * when it reaches the end of the board.
+ *
+ * @return Board::PawnPromotionValue The current pawn promotion value.
+ */
+Board::PawnPromotionValue Board::getPawnPromotionValue() {
+    return Pawn_promotion_value;
 }

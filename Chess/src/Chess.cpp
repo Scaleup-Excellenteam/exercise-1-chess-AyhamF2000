@@ -234,6 +234,12 @@ void Chess::doTurn()
 		displayBoard();
 		exit(0);
 		break;
+	case 45:
+		//excute();
+		excutePromotePawn(pawnChangedTo);
+		m_turn = !m_turn;
+		m_msg = "Pawn promoted successfully \n";
+		break;
 	}
 	}
 }
@@ -355,8 +361,7 @@ void Chess::setCodeResponse(int codeResponse)
 {
 	if (((11 <= codeResponse) && (codeResponse <= 13)) ||
 		((21 == codeResponse) || (codeResponse == 31)) ||
-		((41 == codeResponse) || (codeResponse == 42)) ||
-		((43 == codeResponse) || (codeResponse == 44)))
+		((41 <= codeResponse) && (codeResponse <= 45)))
 		m_codeResponse = codeResponse;
 }
 
@@ -377,4 +382,48 @@ void Chess::changeBoardString(string newBoardString) {
 	this->m_boardString = newBoardString;
 	setPieces();
 	//excute();
+}
+
+
+
+
+
+void Chess::setpawnChangedTo(char pawnChangedTo) {
+	this->pawnChangedTo = pawnChangedTo;
+}
+
+
+
+
+
+//void Chess::checkAndPromotePawn(char pawnChangedTo) {
+//	for (size_t col = 8; col < 16; ++col) {
+//		// Check for white pawn promotion
+//		if (m_boardString[col] == 'p') {
+//			m_boardString[col] = '#';
+//			m_boardString[col+8] = char(pawnChangedTo);
+//		}
+//		// Check for black pawn promotion
+//		if (m_boardString[40 + col] == 'P') {
+//			m_boardString[40 + col] = '#';
+//			m_boardString[48 + col] = char(pawnChangedTo);
+//		}
+//	}
+//	std::cout << m_boardString;
+//	setPieces();
+//}
+
+
+
+void Chess::excutePromotePawn(char pawnChangedTo) {
+	int row = (m_input[0] - 'a');
+	int col = (m_input[1] - '1');
+	char pieceInSource = m_boardString[(row * 8) + col];
+	m_boardString[(row * 8) + col] = '#';
+
+	row = (m_input[2] - 'a');
+	col = (m_input[3] - '1');
+	m_boardString[(row * 8) + col] = pawnChangedTo;
+
+	setPieces();
 }

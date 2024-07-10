@@ -35,6 +35,7 @@ int main()
 		42 - the last movement was legal, next turn 
 		43 - castling 
 		44 - chess
+		45- pawn promotion
 		*/
 
 		{ // put your code here instead that code
@@ -65,10 +66,12 @@ int main()
             codeResponse = myBoard.checkMove(currentRow,currentColumn ,goalRow,goalColumn, myColor);
 			
 			
-			
-			if (codeResponse >= 41 && codeResponse <= 44)
-				myColor = (myColor == 'W' ? 'B' : 'W');
+			if (codeResponse == 45)
+				a.setpawnChangedTo(myBoard.getPawnPromotionValue());
 
+			if (codeResponse >= 41 && codeResponse <= 45)
+				myColor = (myColor == 'W' ? 'B' : 'W');
+			
 
 			if (myBoard.getGameState() == Board::GameState::WHITE_WIN) { 
 				a.setGameState(Chess::WHITE_WIN);
@@ -85,7 +88,7 @@ int main()
 
 			res = a.getInput();
 			
-			
+			//getPawnPromotionValue()
 
 	}
 

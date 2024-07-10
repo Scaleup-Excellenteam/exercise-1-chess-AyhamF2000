@@ -19,6 +19,7 @@ class Chess {
 	string m_errorMsg = "\n";
 	int m_codeResponse;
 	Move move;
+	char pawnChangedTo;
 
 	void clear() const;
 	void setFrames();
@@ -32,6 +33,7 @@ class Chess {
 	void excute();
 	void doTurn();
 	void executeCastling();
+	void excutePromotePawn(char pawnChangedTo);
 
 public:
 	Chess(const string& start = "RNBQKBNRPPPPPPPP################################pppppppprnbqkbnr");
@@ -44,4 +46,6 @@ public:
 	GameState gameState;
 	void setGameState(GameState state); 
 	void changeBoardString(string newBoard);
+	void setpawnChangedTo(char pawnChangedTo);
+
 };

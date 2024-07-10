@@ -13,6 +13,7 @@ class Board {
 public:
    
     enum GameState { WHITE_WIN, BLACK_WIN, DRAW, STILL_PLAYING };
+    enum PawnPromotionValue {Q = 'Q',R = 'R',B = 'B',N = 'N',q = 'q',r = 'r',b = 'b',n = 'n'};
     Board();
     Board(const std::string& );
     int checkMove(const int currentRow, const int currentColumn, const int goalRow, const int goalColumn, const char playerColor);
@@ -26,7 +27,7 @@ public:
     std::string boardToString() const;
     bool handlePawnPromotion(int goalRow, std::shared_ptr<Piece>& piece);
     bool canEscapeCheck(const char color);
-
+    PawnPromotionValue getPawnPromotionValue();
 private:
     std::vector<std::vector<std::shared_ptr<Piece>>> board;
     std::shared_ptr<Piece> createPiece(const char type, const char color);
@@ -34,7 +35,7 @@ private:
     std::pair<int, int> getKingPositionByColor(const char color);
     bool checkForCastling(int currentRow, int currentColumn, int goalRow, int goalColumn, const char playerColor);
    
-
     GameState gameState;
+    PawnPromotionValue Pawn_promotion_value;
 
 };

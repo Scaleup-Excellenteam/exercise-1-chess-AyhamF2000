@@ -130,6 +130,8 @@ int MoveEvaluator::evaluateMove(int currentRow, int currentColumn, int goalRow, 
         score += 10000;  // Arbitrary high score for checkmate
         
     }
+    if(board.isKingInCheck(playerColor))
+        score -= 10000;
     
     // Evaluate opponent's response if depth > 0
     if (depth > 0) {

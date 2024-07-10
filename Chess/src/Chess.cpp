@@ -107,9 +107,13 @@ void Chess::show() const
 // clear screen and print the board and the relevant msg 
 void Chess::displayBoard() const
 {
-	//clear();
+	clear();
 	show();
-	cout << move << endl;
+
+	// To make sure not to print the recommended move after finishing the game
+	if(gameState == STILL_PLAYING)
+		cout << move << endl;
+
 	cout << m_msg<< m_errorMsg;
 	
 	
@@ -311,7 +315,10 @@ string Chess::getInput()
 			m_errorMsg += e.what();
 			m_errorMsg += '\n';
 			//std::cerr << "An error occurred: " << e.what() << std::endl;
-		}
+		} 
+		
+
+		
 	}
 	displayBoard();
 	showAskInput();
@@ -366,8 +373,8 @@ void Chess::SetEvaluateMove(Move move)
 
 
 
-//void Chess::changeBoardString(string newBoard) {
-//	this->m_boardString = newBoard;
-//	setPieces();
-//	excute();
-//}
+void Chess::changeBoardString(string newBoardString) {
+	this->m_boardString = newBoardString;
+	setPieces();
+	//excute();
+}

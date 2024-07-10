@@ -4,9 +4,9 @@
 #include "Board.h"
 int main()
 {
-	//string board = "RNBQKBNRPPPPPPPP################################pppppppprnbqkbnr";
-	//string board = "R###K##R####PPPPb###############################ppppppppr###k##r";// to check the castling
-	string board = "RNBQK###PPPPPPPP##################################P##P######kbnr";
+	string board = "RNBQKBNRPPPPPPPP################################pppppppprnbqkbnr";
+	//string board = "R###K##R####PPPPb###############################ppppppppr###k##r";// to check castling
+	//string board = "RNBQK###PPPPPPPP##################################P##P######kbnr";// to check pawn promotion
 
 	Chess a(board);
 
@@ -14,7 +14,7 @@ int main()
 	char myColor = 'W';
 
 	int codeResponse = 0;
-	a.SetEvaluateMove(myBoard.getBestMove(myColor, 0));
+	a.SetEvaluateMove(myBoard.getBestMove(myColor, 2));
 	string res = a.getInput();
 
 	
@@ -81,7 +81,8 @@ int main()
 
 			a.setCodeResponse(codeResponse);
 
-			a.SetEvaluateMove(myBoard.getBestMove(myColor, 0));
+			a.SetEvaluateMove(myBoard.getBestMove(myColor, 2));
+
 			res = a.getInput();
 			
 			

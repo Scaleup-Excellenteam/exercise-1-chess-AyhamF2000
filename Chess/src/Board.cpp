@@ -543,7 +543,7 @@ Move Board::getBestMove(char playerColor, int depth) {
     MoveEvaluator evaluator(*this, playerColor);
     evaluator.evaluateMoves(depth);
     std::vector<Move> bestMoves = evaluator.getBestMoves();
-    std::cout << bestMoves << std::endl;
+    //std::cout << bestMoves << std::endl;
 
     if (!bestMoves.empty()) {
         return bestMoves.front(); // Return the best move
@@ -567,7 +567,9 @@ Move Board::getBestMove(char playerColor, int depth) {
  * @return bool True if the promotion was successful, false otherwise.
  */
 bool Board::handlePawnPromotion(int goalRow, std::shared_ptr<Piece>& piece) {
-    if(piece)
+    if (!piece)
+        return false;
+
     if (piece->getName() == 'P' && (goalRow == 0 || goalRow == 7)) {
         char choice;
         std::cout << "Promote pawn to (Q/R/B/N): ";

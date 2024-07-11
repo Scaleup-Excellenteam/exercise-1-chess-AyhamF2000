@@ -69,15 +69,17 @@ void MoveEvaluator::evaluateMoves(int depth) {
 /**
  * @brief Retrieves the best moves evaluated.
  *
- * This function returns a vector of the best moves stored in the priority queue.
+ * This function returns a vector of the best 5 moves stored in the priority queue.
  *
  * @return std::vector<Move> The best moves evaluated.
  */
 std::vector<Move> MoveEvaluator::getBestMoves() const {
     std::vector<Move> bestMoves;
-    PriorityQueue<Move, MyComparator> tempQueue = this->moveQueue; // Create a copy of the queue
-    while (!tempQueue.isEmpty()) {
+    PriorityQueue<Move, MyComparator> tempQueue = this->moveQueue; // Creating a copy of the queue
+    int count = 0;
+    while (!tempQueue.isEmpty() && count < 5) {
         bestMoves.push_back(tempQueue.poll());
+        count++;
     }
     return bestMoves;
 }
@@ -131,7 +133,7 @@ int MoveEvaluator::evaluateMove(int currentRow, int currentColumn, int goalRow, 
         
     }
     if(board.isKingInCheck(playerColor))
-        score -= 10000;
+        score -= 10000; // Arbitrary low score for losing
     
     // Evaluate opponent's response if depth > 0
     if (depth > 0) {

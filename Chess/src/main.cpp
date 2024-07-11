@@ -13,8 +13,17 @@ int main()
     Board myBoard(board);
 	char myColor = 'W';
 
+	int depth;
+	std::cout << "Enter the depth for move evaluation (up to 2): ";
+	std::cin >> depth;
+
+	if (depth < 1 || depth > 2) {
+		std::cerr << "Invalid depth. Setting depth to 2." << std::endl;
+		depth = 2;
+	}
+
 	int codeResponse = 0;
-	a.SetEvaluateMove(myBoard.getBestMove(myColor, 2));
+	a.SetEvaluateMove(myBoard.getBestMove(myColor, depth));
 	string res = a.getInput();
 
 	
@@ -40,13 +49,17 @@ int main()
 
 		{ // put your code here instead that code
 
-			// Smart move to checkmate the black king in 4 moves:
-			// b6c6 g5e5 b7d7 h4d8
-			/* 
-			b5e5
-			g5e5
-			a7c6
-			h2f3
+			// Smart move to checkmate:
+			// senario01- black wins: b6c6 g5e5 b7d7 h4d8 
+			// senario02- white wins: b5d5 g5e5 a6d3 h2f3 a4c6 g4f4 c6g6 
+			// senario03- white wins: b5d5 g5e5 a4e8 h5g5 e8e5
+			/*
+			NOTE: During these smart moves, observe the recommended moves for the winning player.
+			You'll notice that they match the moves I've written.
+			This is because the depth 2 evaluation accurately identifies the best moves.
+
+			For example, in scenario 01, the black player is recommended to move from 
+			g5 to e5 (which brings them closer to winning), and then from h4 to d8 (to achieve checkmate).
 			*/
 
             std::stringstream stringNumber1,stringNumber2;
@@ -84,7 +97,7 @@ int main()
 
 			a.setCodeResponse(codeResponse);
 
-			a.SetEvaluateMove(myBoard.getBestMove(myColor, 2));
+			a.SetEvaluateMove(myBoard.getBestMove(myColor, depth));
 
 			res = a.getInput();
 			

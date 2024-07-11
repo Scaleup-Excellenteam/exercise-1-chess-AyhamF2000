@@ -122,7 +122,6 @@ void Board::setupBoard(const std::string& boardStr) {
  * @param column The column index of the position (0-based).
  * @return std::shared_ptr<Piece> The piece at the specified position, or nullptr if the position is out of bounds or empty.
  */
-
 std::shared_ptr<Piece> Board::getPiece(int row, int column) const {
     if(row >= 0 && row < BOARD_SIZE && column >= 0 && column < BOARD_SIZE)
         return board[row][column];
@@ -132,6 +131,15 @@ std::shared_ptr<Piece> Board::getPiece(int row, int column) const {
 
 
 
+/**
+ * @brief Sets a piece at the specified position on the board.
+ *
+ * This method places the given piece at the specified row and column on the board.
+ *
+ * @param row The row index of the position (0-based).
+ * @param column The column index of the position (0-based).
+ * @param piece A shared pointer to the piece to be placed on the board.
+ */
 void Board::setPiece(int row, int column, std::shared_ptr<Piece> piece) {
     board[row][column] = piece;
 }
@@ -150,7 +158,6 @@ void Board::setPiece(int row, int column, std::shared_ptr<Piece> piece) {
  * @param color The color of the piece ('W' for white, 'B' for black).
  * @return std::shared_ptr<Piece> A shared pointer to the created piece.
  */
-
 std::shared_ptr<Piece> Board::createPiece(const char type, const char color) {
     switch (std::toupper(type)) {
     case 'R':
@@ -188,7 +195,6 @@ std::shared_ptr<Piece> Board::createPiece(const char type, const char color) {
  * @param playerColor The color of the player making the move.
  * @return int A code indicating the result of the move .
  */
-
 int Board::checkMove(const int currentRow, const int currentColumn, const int goalRow, const int goalColumn, const char playerColor) {
 
     // This statement is handled in the Chess.cpp

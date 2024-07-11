@@ -1,4 +1,5 @@
 	#include "Chess.h"
+#include "ChessExceptions.h"
 
 // clear the screen "cls"
 void Chess::clear() const 
@@ -108,7 +109,13 @@ void Chess::displayBoard() const
 {
 	clear();
 	show();
+
+	// To make sure not to print the recommended move after finishing the game
+	if(gameState == STILL_PLAYING)
+		cout << move << endl;
+
 	cout << m_msg<< m_errorMsg;
+	
 	
 }
 // print the who is turn before getting input 
@@ -160,27 +167,37 @@ void Chess::doTurn()
 	{
 	case 11:
 	{
-		m_msg = "there is not piece at the source \n";
+		//m_msg = "there is not piece at the source \n";
+		m_msg = "";
+		throw PieceNotFoundException("No piece at the source location.");
 		break;
 	}
 	case 12:
 	{
-		m_msg = "the piece in the source is piece of your opponent \n";
+		m_msg = "";
+		//m_msg = "the piece in the source is piece of your opponent \n";
+		throw InvalidMoveException("The piece in the source location belongs to the opponent.");
 		break;
 	}
 	case 13:
 	{
-		m_msg = "there one of your pieces at the destination \n";
+		m_msg = "";
+		//m_msg = "there one of your pieces at the destination \n";
+		throw InvalidMoveException("There is already a piece of the same color at the destination.");
 		break;
 	}
 	case 21:
 	{
-		m_msg = "illegal movement of that piece \n";
+		m_msg = "";
+		throw InvalidMoveException("Illegal movement of that piece.");
+		//m_msg = "illegal movement of that piece \n";
 		break;
 	}
 	case 31:
 	{
-		m_msg = "this movement will cause you checkmate \n";
+		m_msg = "";
+		//m_msg = "this movement will cause you checkmate \n";
+		throw CheckException("Illegal move: it leaves the king in check.");
 		break;
 	}
 	case 41:
@@ -196,13 +213,76 @@ void Chess::doTurn()
 		m_turn = !m_turn;
 		m_msg = "the last movement was legal \n";
 		break;
+	case 43:
+		executeCastling();
+		m_turn = !m_turn;
+		m_msg = "Castling performed successfully \n";
+		break;
+	case 44:
+		excute();
+		switch (gameState) {
+		case WHITE_WIN: 
+			m_msg = "Checkmate! White wins the game.\n";
+			break;
+		case BLACK_WIN: 
+			m_msg = "Checkmate! Black wins the game.\n";
+			break;
+		case DRAW: 
+			m_msg = "The game is a draw.\n";
+			break;
+		}
+		displayBoard();
+		exit(0);
+		break;
+	case 45:
+		//excute();
+		excutePromotePawn(pawnChangedTo);
+		m_turn = !m_turn;
+		m_msg = "Pawn promoted successfully \n";
+		break;
 	}
 	}
 }
 
+void Chess::executeCastling() {
+	int row = m_input[0] - 'a';
+	int col = m_input[1] - '1';
+
+	// Determine the type of castling based on the input
+	bool isKingside = (m_input[2] == m_input[0] && m_input[3] == m_input[1] + 2);
+	bool isQueenside = (m_input[2] == m_input[0] && m_input[3] == m_input[1] - 2);
+
+	char king = m_boardString[row * 8 + col];
+	char rook;
+
+	if (isKingside) {
+		// Move the king two squares to the right
+		m_boardString[row * 8 + col] = '#';
+		m_boardString[row * 8 + (col + 2)] = king;
+
+		// Move the rook next to the king's new position
+		rook = m_boardString[row * 8 + 7];
+		m_boardString[row * 8 + 7] = '#';
+		m_boardString[row * 8 + (col + 1)] = rook;
+	}
+	else if (isQueenside) {
+		// Move the king two squares to the left
+		m_boardString[row * 8 + col] = '#';
+		m_boardString[row * 8 + (col - 2)] = king;
+
+		// Move the rook next to the king's new position
+		rook = m_boardString[row * 8 + 0];
+		m_boardString[row * 8 + 0] = '#';
+		m_boardString[row * 8 + (col - 1)] = rook;
+	}
+
+	// Update the ASCII board representation
+	setPieces();
+}
+
 // C'tor
 Chess::Chess(const string& start)
-	: m_boardString(start),m_codeResponse(-1)
+	: m_boardString(start),m_codeResponse(-1), gameState(STILL_PLAYING)
 {
 	setFrames();
 	setPieces();
@@ -212,12 +292,40 @@ Chess::Chess(const string& start)
 string Chess::getInput()
 {
 	static bool isFirst = true;
-
 	if (isFirst)
 		isFirst = false;
-	else
-		doTurn(); 
+	else {
+		try {
+			doTurn();
+		}
+		catch (const InvalidMoveException& e) {
+			m_errorMsg += "Invalid move: ";
+			m_errorMsg += e.what();
+			m_errorMsg += '\n';
+			//std::cerr << "Invalid move: " << e.what() << std::endl;
+		}
+		catch (const PieceNotFoundException& e) {
+			m_errorMsg += "Piece not found: ";
+			m_errorMsg += e.what();
+			m_errorMsg += '\n';
+			//std::cerr << "Piece not found: " << e.what() << std::endl;
+		}
+		catch (const CheckException& e) {
+			m_errorMsg += "Check error: ";
+			m_errorMsg += e.what();
+			m_errorMsg += '\n';
+			//std::cerr << "Check error: " << e.what() << std::endl;
+		}
+		catch (const std::exception& e) {
+			m_errorMsg += "An error occurred: ";
+			m_errorMsg += e.what();
+			m_errorMsg += '\n';
+			//std::cerr << "An error occurred: " << e.what() << std::endl;
+		} 
+		
 
+		
+	}
 	displayBoard();
 	showAskInput();
 
@@ -226,6 +334,7 @@ string Chess::getInput()
 		return "exit";
 	while (!isValid() || isSame())
 	{
+		m_msg = "";
 		if (!isValid())
 			m_errorMsg = "Invalid input !! \n";
 		else
@@ -252,6 +361,69 @@ void Chess::setCodeResponse(int codeResponse)
 {
 	if (((11 <= codeResponse) && (codeResponse <= 13)) ||
 		((21 == codeResponse) || (codeResponse == 31)) ||
-		((41 == codeResponse) || (codeResponse == 42)))
+		((41 <= codeResponse) && (codeResponse <= 45)))
 		m_codeResponse = codeResponse;
+}
+
+void Chess::setGameState(GameState state) {
+	gameState = state;
+}
+
+void Chess::SetEvaluateMove(Move move)
+{
+	this->move = move;
+}
+
+
+
+
+
+void Chess::changeBoardString(string newBoardString) {
+	this->m_boardString = newBoardString;
+	setPieces();
+	//excute();
+}
+
+
+
+
+
+void Chess::setpawnChangedTo(char pawnChangedTo) {
+	this->pawnChangedTo = pawnChangedTo;
+}
+
+
+
+
+
+//void Chess::checkAndPromotePawn(char pawnChangedTo) {
+//	for (size_t col = 8; col < 16; ++col) {
+//		// Check for white pawn promotion
+//		if (m_boardString[col] == 'p') {
+//			m_boardString[col] = '#';
+//			m_boardString[col+8] = char(pawnChangedTo);
+//		}
+//		// Check for black pawn promotion
+//		if (m_boardString[40 + col] == 'P') {
+//			m_boardString[40 + col] = '#';
+//			m_boardString[48 + col] = char(pawnChangedTo);
+//		}
+//	}
+//	std::cout << m_boardString;
+//	setPieces();
+//}
+
+
+
+void Chess::excutePromotePawn(char pawnChangedTo) {
+	int row = (m_input[0] - 'a');
+	int col = (m_input[1] - '1');
+	char pieceInSource = m_boardString[(row * 8) + col];
+	m_boardString[(row * 8) + col] = '#';
+
+	row = (m_input[2] - 'a');
+	col = (m_input[3] - '1');
+	m_boardString[(row * 8) + col] = pawnChangedTo;
+
+	setPieces();
 }

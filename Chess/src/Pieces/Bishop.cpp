@@ -2,7 +2,7 @@
 
 // Bishops move diagonally
 bool Bishop::isMoveLegal(int currentRow, int currentColumn, int goalRow, int goalColumn, const Board& board) const {
-    if (abs(goalRow - currentRow) != abs(goalColumn - currentColumn))
+    if (abs(goalRow - currentRow) != abs(goalColumn - currentColumn) || (currentRow == goalRow && currentColumn == goalColumn))
         return false;  
 
     // Check if path is clear
@@ -18,5 +18,8 @@ bool Bishop::isMoveLegal(int currentRow, int currentColumn, int goalRow, int goa
         col += colStep;
     }
 
+    std::shared_ptr<Piece> goalPiece = board.getPiece(goalRow, goalColumn);
+    if (goalPiece != nullptr && goalPiece->getColor() == this->getColor())
+        return false;
     return true;
 }

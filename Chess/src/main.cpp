@@ -85,7 +85,6 @@ int main()
 			if (codeResponse >= 41 && codeResponse <= 45)
 				myColor = (myColor == 'W' ? 'B' : 'W');
 			
-
 			if (myBoard.getGameState() == Board::GameState::WHITE_WIN) { 
 				a.setGameState(Chess::WHITE_WIN);
 			}else if (myBoard.getGameState() == Board::GameState::BLACK_WIN) {

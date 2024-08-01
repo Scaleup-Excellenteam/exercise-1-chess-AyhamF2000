@@ -23,7 +23,7 @@ public:
     void setPiece(int row, int column, std::shared_ptr<Piece> piece);
     GameState getGameState() const;
     bool isKingInCheck(const char color);
-    Move getBestMove(char playerColor, int depth = 1);
+    Move getBestMove(char playerColor, int depth = 1, size_t numThreads=2);
     std::string boardToString() const;
     bool handlePawnPromotion(int goalRow, std::shared_ptr<Piece>& piece);
     bool canEscapeCheck(const char color);

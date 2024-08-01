@@ -107,7 +107,7 @@ void Chess::show() const
 // clear screen and print the board and the relevant msg 
 void Chess::displayBoard() const
 {
-	//clear();
+	clear();
 	show();
 
 	// To make sure not to print the recommended move after finishing the game

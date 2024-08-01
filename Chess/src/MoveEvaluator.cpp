@@ -45,8 +45,8 @@ void MoveEvaluator::initializePieceValues() {
  *
  * @param depth The depth of move evaluation.
  */
-void MoveEvaluator::evaluateMoves(int depth) {
-    ThreadPool pool(8);
+void MoveEvaluator::evaluateMoves(int depth, int threads) {
+    ThreadPool pool(threads);
     std::vector<std::future<void>> futures; 
 
     for (int row = 0; row < BOARD_SIZE; ++row) {
@@ -80,84 +80,6 @@ void MoveEvaluator::evaluateMoves(int depth) {
         future.get();
     }
 }
-
-
-
-//void MoveEvaluator::evaluateMoves(int depth) {
-//    std::cout << "Starting evaluateMoves with depth: " << depth << std::endl;
-//    ThreadPool pool(8);
-//    std::vector<std::future<void>> futures;
-//
-//    for (int row = 0; row < BOARD_SIZE; ++row) {
-//        for (int col = 0; col < BOARD_SIZE; ++col) {
-//            std::shared_ptr<Piece> piece = board.getPiece(row, col);
-//            if (piece && piece->getColor() == playerColor) {
-//                //std::cout << "Found piece at (" << row << ", " << col << ")" << std::endl;
-//                futures.emplace_back(pool.executeTask([this, row, col, depth]() {
-//                    this->evaluatePieceMoves(row, col, depth);
-//                    }));
-//            }
-//        }
-//    }
-//
-//    for (auto& future : futures) {
-//        future.get();
-//    }
-//    std::cout << "Finished evaluateMoves." << std::endl;
-//}
-//
-//void MoveEvaluator::evaluatePieceMoves(int row, int col, int depth) {
-//    for (int toRow = 0; toRow < BOARD_SIZE; ++toRow) {
-//        for (int toCol = 0; toCol < BOARD_SIZE; ++toCol) {
-//            std::shared_ptr<Piece> piece = this->board.getPiece(row, col);
-//            if (piece) {
-//                /*std::cout << "Evaluating move from (" << row << ", " << col << ") to (" << toRow << ", " << toCol << ")" << std::endl;*/
-//                if (piece->isMoveLegal(row, col, toRow, toCol, this->board)) {
-//                    int moveScore = this->evaluateMove(row, col, toRow, toCol, depth);
-//                    {
-//                        std::lock_guard<std::mutex> lock(this->queueMutex);
-//                        std::cout << "Evaluating move from (" << row << ", " << col << ") to (" << toRow << ", " << toCol << ")" << std::endl;
-//                        this->moveQueue.push(Move(row, col, toRow, toCol, moveScore));
-//                    }
-//                }
-//            }
-//            else {
-//                std::cout << "Piece is null at (" << row << ", " << col << ")" << std::endl;
-//                
-//            }
-//        }
-//    }
-//}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

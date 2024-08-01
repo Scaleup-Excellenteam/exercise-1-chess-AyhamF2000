@@ -546,11 +546,11 @@ Board::GameState Board::getGameState() const {
  * @return Move The best move found for the given player color.
  * @throw std::runtime_error If no valid moves are available.
  */
-Move Board::getBestMove(char playerColor, int depth/*, size_t numThreads*/) {
+Move Board::getBestMove(char playerColor, int depth, size_t numThreads) {
     MoveEvaluator evaluator(*this, playerColor/*, numThreads*/);
-    evaluator.evaluateMoves(depth);
+    evaluator.evaluateMoves(depth, numThreads);
     std::vector<Move> bestMoves = evaluator.getBestMoves();
-    std::cout << bestMoves << std::endl;
+    //std::cout << bestMoves << std::endl;
 
     if (!bestMoves.empty()) {
         return bestMoves.front(); // Return the best move

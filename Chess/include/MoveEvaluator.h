@@ -15,7 +15,7 @@
 class MoveEvaluator {
 public:
     MoveEvaluator(Board& board, char playerColor);
-    void evaluateMoves(int depth);
+    void evaluateMoves(int depth, int threads);
     std::vector<Move> getBestMoves() const;
 
 private:

@@ -7,6 +7,8 @@ int main()
 	string board = "RNBQKBNRPPPPPPPP################################pppppppprnbqkbnr";
 	//string board = "R###K##R####PPPPb###############################ppppppppr###k##r";// to check castling
 	//string board = "RNBQK###PPPPPPPP##################################P##P######kbnr";// to check pawn promotion
+	//string board = "RNBQK#############################################P##P######kbnr";// to check pawn promotion
+
 
 	Chess a(board);
 
@@ -17,7 +19,7 @@ int main()
 	std::cout << "Enter the depth for move evaluation (up to 2): ";
 	std::cin >> depth;
 
-	if (depth < 1 || depth > 2) {
+	if (depth < 1 || depth > 3) {
 		std::cerr << "Invalid depth. Setting depth to 2." << std::endl;
 		depth = 2;
 	}

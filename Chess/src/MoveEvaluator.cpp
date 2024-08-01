@@ -46,22 +46,119 @@ void MoveEvaluator::initializePieceValues() {
  * @param depth The depth of move evaluation.
  */
 void MoveEvaluator::evaluateMoves(int depth) {
+    ThreadPool pool(8);
+    std::vector<std::future<void>> futures; 
+
     for (int row = 0; row < BOARD_SIZE; ++row) {
         for (int col = 0; col < BOARD_SIZE; ++col) {
             std::shared_ptr<Piece> piece = board.getPiece(row, col);
             if (piece && piece->getColor() == playerColor) {
-                for (int toRow = 0; toRow < BOARD_SIZE; ++toRow) {
-                    for (int toCol = 0; toCol < BOARD_SIZE; ++toCol) {
-                        if (piece->isMoveLegal(row, col, toRow, toCol, board)) {
-                            int moveScore = evaluateMove(row, col, toRow, toCol, depth);
-                            moveQueue.push(Move(row, col, toRow, toCol, moveScore));
+                futures.emplace_back(pool.executeTask([this, row, col, depth]() {     //
+                    for (int toRow = 0; toRow < BOARD_SIZE; ++toRow) {
+                        for (int toCol = 0; toCol < BOARD_SIZE; ++toCol) {
+
+                            /*futures.emplace_back(pool.executeTask(std::bind(&MoveEvaluator::evaluateMove, this, std::placeholders::_1, 
+                                std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5), row, col, toRow, toCol, depth));*/
+
+
+                            if (board.getPiece(row, col)->isMoveLegal(row, col, toRow, toCol, board)) {
+                                //std::lock_guard<std::mutex> lock(this->queueMutex);
+                                Board board = this->board;
+                                int moveScore = evaluateMove(row, col, toRow, toCol, depth, board);
+                                std::lock_guard<std::mutex> lock(queueMutex);
+                                moveQueue.push(Move(row, col, toRow, toCol, moveScore));
+                            }
                         }
                     }
-                }
+
+                    }));   //
             }
         }
     }
+
+    for (auto& future : futures) {
+        future.get();
+    }
 }
+
+
+
+//void MoveEvaluator::evaluateMoves(int depth) {
+//    std::cout << "Starting evaluateMoves with depth: " << depth << std::endl;
+//    ThreadPool pool(8);
+//    std::vector<std::future<void>> futures;
+//
+//    for (int row = 0; row < BOARD_SIZE; ++row) {
+//        for (int col = 0; col < BOARD_SIZE; ++col) {
+//            std::shared_ptr<Piece> piece = board.getPiece(row, col);
+//            if (piece && piece->getColor() == playerColor) {
+//                //std::cout << "Found piece at (" << row << ", " << col << ")" << std::endl;
+//                futures.emplace_back(pool.executeTask([this, row, col, depth]() {
+//                    this->evaluatePieceMoves(row, col, depth);
+//                    }));
+//            }
+//        }
+//    }
+//
+//    for (auto& future : futures) {
+//        future.get();
+//    }
+//    std::cout << "Finished evaluateMoves." << std::endl;
+//}
+//
+//void MoveEvaluator::evaluatePieceMoves(int row, int col, int depth) {
+//    for (int toRow = 0; toRow < BOARD_SIZE; ++toRow) {
+//        for (int toCol = 0; toCol < BOARD_SIZE; ++toCol) {
+//            std::shared_ptr<Piece> piece = this->board.getPiece(row, col);
+//            if (piece) {
+//                /*std::cout << "Evaluating move from (" << row << ", " << col << ") to (" << toRow << ", " << toCol << ")" << std::endl;*/
+//                if (piece->isMoveLegal(row, col, toRow, toCol, this->board)) {
+//                    int moveScore = this->evaluateMove(row, col, toRow, toCol, depth);
+//                    {
+//                        std::lock_guard<std::mutex> lock(this->queueMutex);
+//                        std::cout << "Evaluating move from (" << row << ", " << col << ") to (" << toRow << ", " << toCol << ")" << std::endl;
+//                        this->moveQueue.push(Move(row, col, toRow, toCol, moveScore));
+//                    }
+//                }
+//            }
+//            else {
+//                std::cout << "Piece is null at (" << row << ", " << col << ")" << std::endl;
+//                
+//            }
+//        }
+//    }
+//}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -100,7 +197,7 @@ std::vector<Move> MoveEvaluator::getBestMoves() const {
  * @param depth The depth of move evaluation.
  * @return int The score of the evaluated move.
  */
-int MoveEvaluator::evaluateMove(int currentRow, int currentColumn, int goalRow, int goalColumn, int depth) {
+int MoveEvaluator::evaluateMove(int currentRow, int currentColumn, int goalRow, int goalColumn, int depth, Board& board) {
     std::shared_ptr<Piece> piece = board.getPiece(currentRow, currentColumn);
     std::shared_ptr<Piece> targetPiece = board.getPiece(goalRow, goalColumn);
 
@@ -122,7 +219,8 @@ int MoveEvaluator::evaluateMove(int currentRow, int currentColumn, int goalRow, 
     board.setPiece(currentRow, currentColumn, nullptr);
 
     // Check if the move puts the piece in danger
-    score += evaluateThreats(currentRow, currentColumn, goalRow, goalColumn, piece);
+    if(piece!= nullptr) // !!!
+        score += evaluateThreats(currentRow, currentColumn, goalRow, goalColumn, piece, board);
 
     // Evaluate board control
     score += evaluateBoardControl();
@@ -130,11 +228,11 @@ int MoveEvaluator::evaluateMove(int currentRow, int currentColumn, int goalRow, 
     char opponentColor = (playerColor == 'W') ? 'B' : 'W';
     if (board.isKingInCheck(opponentColor) && !board.canEscapeCheck(opponentColor)) {
         score += 10000;  // Arbitrary high score for checkmate
-        
+
     }
-    if(board.isKingInCheck(playerColor))
+    if (board.isKingInCheck(playerColor))
         score -= 10000; // Arbitrary low score for losing
-    
+
     // Evaluate opponent's response if depth > 0
     if (depth > 0) {
         int bestOpponentScore = INT_MIN;
@@ -145,7 +243,7 @@ int MoveEvaluator::evaluateMove(int currentRow, int currentColumn, int goalRow, 
                     for (int toRow = 0; toRow < BOARD_SIZE; ++toRow) {
                         for (int toCol = 0; toCol < BOARD_SIZE; ++toCol) {
                             if (opponentPiece->isMoveLegal(row, col, toRow, toCol, board)) {
-                                int opponentScore = evaluateMove(row, col, toRow, toCol, depth - 1);
+                                int opponentScore = evaluateMove(row, col, toRow, toCol, depth - 1, board);
                                 if (opponentScore > bestOpponentScore) {
                                     bestOpponentScore = opponentScore;
                                 }
@@ -183,7 +281,7 @@ int MoveEvaluator::evaluateMove(int currentRow, int currentColumn, int goalRow, 
  * @param piece The piece being evaluated.
  * @return int The score based on evaluated threats.
  */
-int MoveEvaluator::evaluateThreats(int currentRow, int currentColumn, int goalRow, int goalColumn, const std::shared_ptr<Piece>& piece) {
+int MoveEvaluator::evaluateThreats(int currentRow, int currentColumn, int goalRow, int goalColumn, const std::shared_ptr<Piece>& piece, Board& board) {
     int score = 0;
     for (int row = 0; row < BOARD_SIZE; ++row) {
         for (int col = 0; col < BOARD_SIZE; ++col) {
@@ -264,4 +362,3 @@ std::ostream& operator<<(std::ostream& os, const std::vector<Move>& moves) {
     }
     return os;
 }
-
